@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 // import { toast } from '@/components/ui/use-toast';
 import { ArrowRight, CheckCircle, LoaderCircle } from 'lucide-react';
 import Navbar from '@/components/Shared/Navbar';
+import finteckApi from '@/axios/Axios'; // Adjust the import path as necessary
 
 
 const formSchema = z.object({
@@ -48,42 +49,30 @@ export default function RegisterPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    console.log(values);
+  
+    const data = {     
+        fullName : values.name,
+        email : values.email,
+        role : 'developer',
+        password : values.password,
+    }
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Would be replaced with actual API call:
-      // const response = await fetch('/api/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(values),
-      // });
-      
-      // if (!response.ok) throw new Error('Registration failed');
-      
-    //   toast({
-    //     title: "Account created!",
-    //     description: "You've successfully registered. Redirecting to login...",
-    //   });
-      
-      setStep(2);
-      
-      // Redirect after animation
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-      
-    } catch (error) {
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Registration failed",
-    //     description: "There was an error registering your account. Please try again.",
-    //   });
+      const response = await finteckApi.post('/user/register', data, {
+        withCredentials: true, // sends cookies like refreshToken
+      });
+  
+      console.log('Registration successful:', response.data);
+
+  
+    } catch (error: any) {
+        console.log(error);
     } finally {
       setIsLoading(false);
     }
   }
+  
 
   return (
     <div className="min-h-screen flex flex-col">
