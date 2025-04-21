@@ -29,7 +29,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
-    const {isSubscribed}=useAuth()
+    const {isSubscribed,user}=useAuth()
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,8 +71,15 @@ export default function LoginPage() {
       // Check if user already has a subscription, otherwise redirect to pricing
     //   const hasSubscription = true; // This would come from your login response
       
+    
       if (isSubscribed) {
+        // navigate('/dashboard');
+        if(user.role==='admin'){
+        navigate('/admin/dashboard');
+        }
+        else if(user.role==='user'){
         navigate('/dashboard');
+        }
       } else {
         navigate('/pricing');
       }
@@ -102,7 +109,7 @@ export default function LoginPage() {
             <div className="text-center lg:text-left">
               <h1 className="text-3xl md:text-4xl font-bold mb-6">Welcome Back</h1>
               <p className="text-muted-foreground text-lg mb-8">
-                Log in to access your FinConnect dashboard and API keys.
+                Log in to access your FinConnect dashboard.
               </p>
             </div>
             
@@ -187,13 +194,13 @@ export default function LoginPage() {
                   </div>
                 </div>
                 
-                <h2 className="text-2xl font-semibold text-center mb-6">Secure Access to Financial APIs</h2>
+                <h2 className="text-2xl font-semibold text-center mb-6">Secure Access to Financial transactions</h2>
                 
                 <div className="space-y-4">
                   <div className="bg-muted/50 rounded-lg p-4">
                     <div className="text-sm font-medium">API Authentication</div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      All API requests are authenticated using JWT tokens with strong encryption.
+                      All requests are authenticated with strong encryption.
                     </div>
                   </div>
                   
@@ -205,16 +212,16 @@ export default function LoginPage() {
                   </div>
                   
                   <div className="bg-muted/50 rounded-lg p-4">
-                    <div className="text-sm font-medium">Audit Logging</div>
+                    <div className="text-sm font-medium">Transaction Logging</div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      All authentication events and API requests are securely logged.
+                      All transactions are securely logged.
                     </div>
                   </div>
                 </div>
                 
                 <div className="mt-8 pt-6 border-t">
                   <div className="text-center text-sm text-muted-foreground">
-                    We use industry-standard security practices to protect your data and API access.
+                    We use industry-standard security practices to protect your data.
                   </div>
                 </div>
               </div>

@@ -3,12 +3,29 @@ import { useEffect, useState } from 'react';
 // import { jwtDecode } from 'jwt-decode';
 // import { getAccessToken } from '@/lib/auth';
 
+interface User{
+  id:string,
+  name:string,
+  role:'admin' | 'user',
+  email:string
+}
+interface AuthState {
+  isAuthenticated: boolean;
+  isSubscribed: boolean;
+  isLoading: boolean;
+  user: User;
+}
 export function useAuth() {
-  const [authState, setAuthState] = useState({
+  const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: true,
     isSubscribed: true,
     isLoading: true,
-    user: null,
+    user: {
+      id: '1',
+      name: 'tst User',
+      role: 'admin',
+      email: 'test@example.com'
+    },
   });
 
 //   useEffect(() => {

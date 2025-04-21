@@ -98,7 +98,7 @@ export default function RegisterPage() {
           >
             <h1 className="text-3xl md:text-4xl font-bold mb-6">Create Your FinConnect Account</h1>
             <p className="text-muted-foreground text-lg mb-8">
-              Join thousands of developers building the future of finance with our API platform.
+              Join thousands of developers building the future of finance with our platform.
             </p>
             
             {step === 1 ? (
@@ -210,7 +210,7 @@ export default function RegisterPage() {
               <ul className="space-y-4">
                 {[
                   {
-                    title: "Powerful Financial APIs",
+                    title: "Powerful Financial Transactions",
                     description: "Access transactions, balances, transfers, and invoicing capabilities through a unified platform."
                   },
                   {

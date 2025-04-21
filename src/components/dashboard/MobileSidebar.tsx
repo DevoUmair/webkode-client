@@ -4,24 +4,52 @@ import { Menu } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { motion } from "framer-motion";
-
 import {
     Home,
+    Users,
+    Shield,
+    BarChart2,
+    Settings,
+    FileText,
+    CreditCard,
+    Database,
+    UserPlus
+} from 'lucide-react';
+
+import {
     Wallet,
     ArrowLeftRight,
     History,
-    FileText,
-    Settings
 } from 'lucide-react';
 
+import { useAuth } from '../Hooks/UseAuth';
+import { useEffect } from 'react';
+
+type NavItem = {
+    to: string;
+    icon: any;
+    label: string;
+};
+
 export function MobileSidebar() {
-    const navItems = [
-        { to: '/dashboard', icon: Home, label: 'Overview' },
-        { to: '/dashboard/transfers', icon: ArrowLeftRight, label: 'Transfers' },
-        { to: '/dashboard/transactions', icon: History, label: 'Transactions' },
-        { to: '/dashboard/invoices', icon: FileText, label: 'Invoices' },
-        { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
-    ];
+    const { user } = useAuth()
+
+    const navItems: NavItem[] = user.role === 'user'
+        ? [
+            { to: '/dashboard', icon: Home, label: 'Overview' },
+            { to: '/dashboard/transfers', icon: ArrowLeftRight, label: 'Transfers' },
+            { to: '/dashboard/transactions', icon: History, label: 'Transactions' },
+            { to: '/dashboard/invoices', icon: FileText, label: 'Invoices' },
+            { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
+        ]
+        : [
+            { to: '/admin/dashboard', icon: Home, label: 'Overview' },
+            { to: '/admin/dashboard/transactions', icon: History, label: 'Transactions' },
+            { to: 'admin/dashboard/userManagement', icon: Users, label: 'Users' },
+            { to: 'admin/dashboard/newAdmin', icon: UserPlus, label: 'New Admin' },
+
+
+        ];
     return (
         <Sheet>
             <SheetTrigger className="md:hidden pr-4">
@@ -38,7 +66,7 @@ export function MobileSidebar() {
                             <span className="font-bold text-white">FC</span>
                         </div>
                     </motion.div>
-                    <span className="font-bold text-xl hidden sm:block">FinConnect</span>
+                    <span className="font-bold text-xl">FinConnect</span>
                 </Link>
                 <nav className="space-y-4 mt-2">
                     {navItems.map((item) => (

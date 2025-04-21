@@ -60,7 +60,7 @@ export default function HomePage() {
                             transition={{ duration: 0.5 }}
                         >
                             <motion.h1
-                                className="text-4xl md:text-6xl font-bold mb-6"
+                                className="text-2xl md:text-4xl font-bold mb-6"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2, duration: 0.5 }}
@@ -124,7 +124,7 @@ export default function HomePage() {
                                                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                                                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
                                             </div>
-                                            <div className="text-xs text-muted-foreground ml-4">Transaction Dashboard</div>
+                                            <div className="text-xs text-muted-foreground ml-4">FinConnect</div>
                                         </div>
                                         <div className="p-4">
                                             <div className="h-6 w-3/4 bg-muted rounded mb-4"></div>
