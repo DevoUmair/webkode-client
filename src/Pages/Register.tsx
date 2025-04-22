@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import { toast } from '@/components/ui/use-toast';
 import { ArrowRight, CheckCircle, LoaderCircle } from "lucide-react";
 import Navbar from "@/components/Shared/Navbar";
 import finteckApi from "@/axios/Axios"; // Adjust the import path as necessary

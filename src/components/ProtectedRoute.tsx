@@ -10,6 +10,7 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   console.log("USER", user);
   console.log("ISLOading", isLoading);
 
+
   if (!isLoading) {
     console.log("USER", user);
 

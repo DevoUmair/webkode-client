@@ -14,12 +14,17 @@ import { LogOut, Settings, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Hooks/UseAuth';
 import { useUser } from '@/context/UserContextProvider';
-
+import finteckApi from '@/axios/Axios';
 
 export function UserDropdown() {
-//   const { user, isSubscribed } = useAuth();
   const {user}=useUser()
-  const handleLogout = () => {
+  const handleLogout =async () => {
+    try {
+      const response = await finteckApi.post("/user/logout");
+      console.log(response);
+    } catch (error: any) {
+      console.log(error)
+    } 
     localStorage.removeItem('token');
     window.location.href = '/login';
   };
@@ -60,7 +65,7 @@ export function UserDropdown() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 h-4 w-4"/>
           <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

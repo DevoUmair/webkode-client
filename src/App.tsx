@@ -20,9 +20,10 @@ import AdminDashboardLayout from "./layouts/AdminDashboard";
 import Unauthorized from "./Pages/Unauthorized";
 import { UserManagement } from "./Pages/Admin/UserManagement";
 import { CreateAdmin } from "./Pages/Admin/CreateAdmin";
-import { useUser } from "./context/UserContextProvider";
 
+import SubscriptionSuccess from "./Pages/SubcriptionSuccess";
 function App() {
+
   return (
     <>
       <BrowserRouter>
@@ -32,6 +33,7 @@ function App() {
           <Route path="register" element={<RegisterPage />} />
           <Route path="pricing" element={<PricingPage />} />
           <Route path="about" element={<AboutPage />} />
+          <Route path="subscription/success" element={<SubscriptionSuccess />} />
           <Route path="unauthorized" element={<Unauthorized />} />
 
           <Route element={<ProtectedRoute allowedRoles={["developer"]} />}>

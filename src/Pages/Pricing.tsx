@@ -108,6 +108,7 @@ export default function PricingPage() {
           },
         }
       );
+      console.log(response)
       if (response.data.url) {
         window.location.href = response.data.url;
       }
