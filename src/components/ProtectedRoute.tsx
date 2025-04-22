@@ -13,7 +13,6 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const ref = useRef(null);
 
-  console.log(user);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -23,17 +22,18 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
         ref.current?.complete();
       } else {
         ref.current?.start();
+        
       }
     }
   }, [user, isLoading]);
 
-  if (isLoading || isAuthenticated === null) {
+  if (isLoading) {
     return (
       <FullPageLoader/>
     );
   }
 
-  if (!isAuthenticated) {
+  if (!user?.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
