@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const { user } = useUser();
 
-  if (user && !user.isAuthenticated) {
+  if (!user || !user.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

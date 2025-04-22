@@ -62,7 +62,7 @@ export default function RegisterPage() {
         withCredentials: true, // sends cookies like refreshToken
       });
 
-      navigate("/pricing");
+      setStep(2);
     } catch (error: any) {
       console.log(error);
     } finally {
