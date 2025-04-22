@@ -895,26 +895,26 @@ const Transactions = () => {
     </div>
   );
 
-  const renderFilters = () => (
-    <motion.div
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: showFilters ? 'auto' : 0, opacity: showFilters ? 1 : 0 }}
-      transition={{ duration: 0.3 }}
-      className="overflow-hidden"
-    >
-      <div className={`p-3 space-y-3 ${isMobileView ? 'border-t' : 'border rounded-lg mt-2'}`}>
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by name or transaction ID..."
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-    </motion.div>
-  );
+  // const renderFilters = () => (
+  //   <motion.div
+  //     initial={{ height: 0, opacity: 0 }}
+  //     animate={{ height: showFilters ? 'auto' : 0, opacity: showFilters ? 1 : 0 }}
+  //     transition={{ duration: 0.3 }}
+  //     className="overflow-hidden"
+  //   >
+  //     <div className={`p-3 space-y-3 ${isMobileView ? 'border-t' : 'border rounded-lg mt-2'}`}>
+  //       <div className="relative w-full">
+  //         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+  //         <Input
+  //           placeholder="Search by name or transaction ID..."
+  //           className="pl-10"
+  //           value={searchTerm}
+  //           onChange={(e) => setSearchTerm(e.target.value)}
+  //         />
+  //       </div>
+  //     </div>
+  //   </motion.div>
+  // );
 
   return (
     <div className="container mx-auto px-2 sm:px-4">
@@ -950,19 +950,19 @@ const Transactions = () => {
                     {showAllTransactions ? "Show Paginated" : "Show All"}
                   </Button>
 
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size={isMobileView ? "sm" : "default"}
                     onClick={() => setShowFilters(!showFilters)}
                   >
                     <Filter className="h-4 w-4 mr-2" />
                     {showFilters ? 'Hide Filters' : 'Show Filters'}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
 
-            {renderFilters()}
+            {/* {renderFilters()} */}
           </CardHeader>
 
           <CardContent className="pt-4 sm:pt-6 px-2 sm:px-6">

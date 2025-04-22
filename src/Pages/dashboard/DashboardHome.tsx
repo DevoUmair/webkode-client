@@ -625,6 +625,7 @@ const DashboardHome = () => {
         },
       });
       console.log(response.data)
+      setEndDate(response.data.nextBillingDate)
       // return response.data;
     } catch (error: any) {
       console.error("Error fetching subscription:", error);
@@ -639,7 +640,7 @@ const DashboardHome = () => {
       getSubs()
     }
   }, [accessToken]);
-
+  const [endDate,setEndDate]=useState(null)
   const deposit = async () => {
     const userId = user?.id;
     const amount = parseFloat(depositAmount);
@@ -819,7 +820,7 @@ const DashboardHome = () => {
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4 mr-1" />
-                  <span>Expires: {user?.isSubscribed || "N/A"}</span>
+                  Expires: {endDate ? new Date(endDate).toDateString() : "N/A"}
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                   <CreditCard className="h-4 w-4 mr-1" />
@@ -830,199 +831,7 @@ const DashboardHome = () => {
           </Card>
         </motion.div>
 
-        {/* Total Transactions */}
-        {/* <motion.div variants={item}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Processed Payments
-              </CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">1,234</div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-                <span className="flex items-center text-emerald-500">
-                  <ArrowUpRight className="h-4 w-4 mr-1" />
-                  +8.2%
-                </span>
-                <span>from last billing cycle</span>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div> */}
-
-        {/* Remaining Quota */}
-        <motion.div variants={item}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Success Rate
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">99.4%</div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-                <span>of transactions completed successfully</span>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
-
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* API Usage Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Transaction Analytics</CardTitle>
-              <CardDescription>
-                Daily financial activity by transaction type
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={apiUsageData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    dataKey="payments"
-                    name="Payments"
-                    fill="#3b82f6"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="refunds"
-                    name="Refunds"
-                    fill="#10b981"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="invoices"
-                    name="Invoices"
-                    fill="#8b5cf6"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Usage Trends */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Revenue Trends</CardTitle>
-              <CardDescription>
-                Monthly transaction revenue growth
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <Tooltip />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#8b5cf6"
-                    fillOpacity={1}
-                    fill="url(#colorValue)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      {/* Recent Activities */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.5 }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>
-              Your latest payment activities and account updates
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {/* Activity items */}
-              {[
-                {
-                  icon: <ArrowUpRight className="h-5 w-5 text-emerald-500" />,
-                  title: "Payment Processed",
-                  description:
-                    "Customer payment of $2,500.00 successfully processed",
-                  time: "Just now",
-                },
-                {
-                  icon: <Bell className="h-5 w-5 text-amber-500" />,
-                  title: "Chargeback Alert",
-                  description: "Potential dispute on transaction #45678",
-                  time: "2 hours ago",
-                },
-                {
-                  icon: <ArrowDownLeft className="h-5 w-5 text-blue-500" />,
-                  title: "Settlement Completed",
-                  description:
-                    "Weekly settlement of $12,450.00 transferred to your bank account",
-                  time: "Yesterday",
-                },
-                {
-                  icon: <UserPlus className="h-5 w-5 text-purple-500" />,
-                  title: "New Payment Method Added",
-                  description:
-                    "Business account connected for automatic withdrawals",
-                  time: "2 days ago",
-                },
-              ].map((activity, index) => (
-                <div key={index} className="flex items-start space-x-4">
-                  <div className="p-2 rounded-full bg-background border">
-                    {activity.icon}
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <p className="font-medium">{activity.title}</p>
-                      <span className="text-xs text-muted-foreground">
-                        {activity.time}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {activity.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+       
       </motion.div>
     </div>
   );
