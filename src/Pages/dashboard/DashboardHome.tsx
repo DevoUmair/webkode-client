@@ -1,11 +1,23 @@
 import { useEffect, useState } from 'react';
-import { 
-  Activity, ArrowUpRight, Wallet, ArrowDownLeft, UserPlus, 
-  TrendingUp, LineChart, Bell
+import {
+  Activity, ArrowUpRight, Wallet, ArrowDownLeft, UserPlus,
+  TrendingUp, LineChart, Bell, Loader2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import finteckApi from '@/axios/Axios';
 import { Button } from '@/components/ui/button';
+import { useUser } from '@/context/UserContextProvider';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
 import {
   AreaChart,
   Area,
@@ -42,13 +54,18 @@ const chartData = [
 
 const DashboardHome = () => {
   const [isLoading, setIsLoading] = useState(true);
-  
+  const [balance, setBalance] = useState(0);
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { accessToken, user } = useUser();
+
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -68,8 +85,115 @@ const DashboardHome = () => {
     show: { y: 0, opacity: 1, transition: { duration: 0.5 } }
   };
 
+  useEffect(() => {
+    checkBalance();
+  }, []);
+
+  const deposit = async () => {
+    const userId = user?.id;
+    const amount = parseFloat(depositAmount);
+
+    if (isNaN(amount)) {
+      alert('Please enter a valid amount');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const response = await finteckApi.post(
+        "/account/deposit",
+        { userId, amount },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log("Deposit successful:", response.data);
+      setBalance(response.data.balance);
+      setIsDepositModalOpen(false);
+      setDepositAmount('');
+    } catch (error) {
+      console.error("Failed to deposit", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const checkBalance = async () => {
+    const userId = user?.id;
+    try {
+      const response = await finteckApi.post(
+        "/account/check-balance",
+        { userId },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setBalance(response.data.balance);
+      console.log("Your balance is:", response.data.balance);
+    } catch (error) {
+      console.error("Failed to check balance", error);
+    }
+  };
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
+      {/* Deposit Modal */}
+      <Dialog open={isDepositModalOpen} onOpenChange={setIsDepositModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Deposit Money</DialogTitle>
+            <DialogDescription>
+              Enter the amount you want to deposit to your account.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="amount" className="text-right">
+                Amount ($)
+              </Label>
+              <Input
+                id="amount"
+                type="number"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                className="col-span-3"
+                placeholder="0.00"
+                disabled={isProcessing}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsDepositModalOpen(false);
+                setDepositAmount('');
+              }}
+              disabled={isProcessing}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={deposit}
+              disabled={isProcessing || !depositAmount}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                'Deposit'
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
@@ -81,21 +205,26 @@ const DashboardHome = () => {
       </div>
 
       {/* Stats Cards */}
-      <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+
+      {/* Stats Cards */}
+      <motion.div
+        className="grid grid-cols-1 gap-6 mb-8"
         variants={container}
         initial="hidden"
         animate="show"
       >
-        {/* Balance Card */}
-        <motion.div variants={item}>
+        {/* Centered Balance Card */}
+        <motion.div
+          variants={item}
+          className="flex flex-col gap-2 max-w-md mx-auto w-full"
+        >
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Available Funds</CardTitle>
               <Wallet className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$12,456.78</div>
+              <div className="text-2xl font-bold">${balance.toFixed(2)}</div>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
                 <span className="flex items-center text-emerald-500">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
@@ -105,64 +234,48 @@ const DashboardHome = () => {
               </div>
             </CardContent>
           </Card>
+          <Button
+            className='bg-blue-500 hover:bg-blue-600'
+            onClick={() => setIsDepositModalOpen(true)}
+          >
+            Deposit Money
+          </Button>
         </motion.div>
 
-        {/* Total Transactions */}
-        <motion.div variants={item}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Processed Payments</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">1,234</div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-                <span className="flex items-center text-emerald-500">
-                  <ArrowUpRight className="h-4 w-4 mr-1" />
-                  +8.2%
-                </span>
-                <span>from last billing cycle</span>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* API Requests */}
-        <motion.div variants={item}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Transaction Volume</CardTitle>
-              <LineChart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$89,450</div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-                <span className="flex items-center text-emerald-500">
-                  <ArrowUpRight className="h-4 w-4 mr-1" />
-                  +23.1%
-                </span>
-                <span>over target forecast</span>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Remaining Quota */}
-        <motion.div variants={item}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">99.4%</div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-                <span>of transactions completed successfully</span>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Rest of your cards can go here if you want to keep them */}
       </motion.div>
+      {/* <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div variants={item} className='flex flex-col gap-2 w-full'>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Available Funds</CardTitle>
+              <Wallet className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">${balance.toFixed(2)}</div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
+                <span className="flex items-center text-emerald-500">
+                  <ArrowUpRight className="h-4 w-4 mr-1" />
+                  +12%
+                </span>
+                <span>since last settlement</span>
+              </div>
+            </CardContent>
+          </Card>
+          <Button 
+            className='bg-blue-500 hover:bg-blue-600'
+            onClick={() => setIsDepositModalOpen(true)}
+          >
+            Deposit Money
+          </Button>
+        </motion.div>
+
+      </motion.div> */}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -214,20 +327,20 @@ const DashboardHome = () => {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="name" />
                   <YAxis />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <Tooltip />
-                  <Area 
-                    type="monotone" 
-                    dataKey="value" 
-                    stroke="#8b5cf6" 
-                    fillOpacity={1} 
-                    fill="url(#colorValue)" 
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#8b5cf6"
+                    fillOpacity={1}
+                    fill="url(#colorValue)"
                   />
                 </AreaChart>
               </ResponsiveContainer>

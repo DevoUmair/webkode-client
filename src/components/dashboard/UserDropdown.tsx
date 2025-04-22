@@ -13,11 +13,12 @@ import {
 import { LogOut, Settings, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Hooks/UseAuth';
+import { useUser } from '@/context/UserContextProvider';
 
 
 export function UserDropdown() {
 //   const { user, isSubscribed } = useAuth();
-
+  const {user}=useUser()
   const handleLogout = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
@@ -36,9 +37,9 @@ export function UserDropdown() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Emaaz</p>
+            <p className="text-sm font-medium leading-none">{user?.fullName}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              emaazrehman4@gmail.com
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>

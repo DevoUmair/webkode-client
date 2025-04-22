@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Toaster, toast } from 'react-hot-toast';
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -67,16 +68,15 @@ export default function LoginPage() {
 
           setUser(userObj);
           navigate("/dashboard");
+          toast.success("Login successfull")
         }
       } else {
         navigate("/pricing");
       }
-    } catch (error) {
-      //   toast({
-      //     variant: "destructive",
-      //     title: "Login failed",
-      //     description: "Invalid email or password. Please try again.",
-      //   });
+    } catch (error:any) {
+      // console.log(error)
+      toast.error(error.response.data.message)
+
     } finally {
       setIsLoading(false);
     }
@@ -85,6 +85,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      <Toaster position="top-center"/>
       <div className="flex-1 container max-w-screen-xl mx-auto px-4 py-12 md:py-24">
         <div className="flex flex-col lg:flex-row gap-12 items-center">
           <motion.div
