@@ -11,10 +11,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { useUser } from '@/context/UserContextProvider';
 import { Input } from '@/components/ui/input';
 // import { toast } from '@/components/ui/use-toast';
 import { Loader2, UserPlus } from 'lucide-react';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import finteckApi from '@/axios/Axios';
 // Form validation schema
 const adminFormSchema = z.object({
   name: z.string().min(2, {
@@ -46,25 +50,27 @@ export function CreateAdmin() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const {accessToken}=useUser()
   async function onSubmit(data: AdminFormValues) {
     setIsSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-    //   toast({
-    //     title: "Admin created successfully",
-    //     description: `${data.name} has been added as an admin.`,
-    //   });
-      
+      const response = await finteckApi.post("/admin/create-admin", {
+        fullName:data.name,
+        email:data.email,
+        password:data.password
+      },{
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+  
+      toast.success(response.data?.message );
+  
       form.reset();
-    } catch (error) {
-    //   toast({
-    //     title: "Error",
-    //     description: "Failed to create admin. Please try again.",
-    //     variant: "destructive",
-    //   });
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || "Failed to create admin. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -72,11 +78,9 @@ export function CreateAdmin() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
+      <Toaster/>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">Create New Admin</h2>
-        <div className="flex gap-2">
-          <Button variant="outline">Back to Admins</Button>
-        </div>
       </div>
 
       <div className="border rounded-lg p-6 bg-white">

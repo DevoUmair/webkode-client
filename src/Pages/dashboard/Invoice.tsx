@@ -798,8 +798,7 @@ const Invoices = () => {
                         <AlertTitle>Invoice Generated Successfully</AlertTitle>
                         <AlertDescription className="space-y-2">
                           <p>
-                            Your invoice has been generated for the period{" "}
-                            <strong>{generatedInvoice.period}</strong>.
+                            Your invoice has been generated
                           </p>
     
                           {invoiceData ? (

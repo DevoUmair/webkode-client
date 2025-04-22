@@ -260,24 +260,6 @@ const Transfers = () => {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description (Optional)</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder="Enter a description for this transfer"
-                              disabled={isSubmitting}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
                       {isSubmitting ? (
                         <>
