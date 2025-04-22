@@ -512,6 +512,7 @@
 // };
 
 // export default DashboardHome;
+
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import {
@@ -656,7 +657,7 @@ const DashboardHome = () => {
         }
       );
       console.log("Deposit successful:", response.data);
-      setBalance(response.data.balance);
+      checkBalance()
       setIsDepositModalOpen(false);
       setDepositAmount("");
     } catch (error) {
@@ -769,7 +770,7 @@ const DashboardHome = () => {
               <Wallet className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${balance.toFixed(2)}</div>
+              <div className="text-2xl font-bold">${balance}</div>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
                 <span className="flex items-center text-emerald-500">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
