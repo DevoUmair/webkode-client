@@ -56,6 +56,8 @@ function UserContextProvider({ children }: ProviderProps) {
     setIsLoading(true);
     try {
       const res = await finteckApi.get("/user/token/refresh");
+      console.log("TOKEN", res.data.accessToken);
+
       setAccessToken(res.data.accessToken);
       const userObj = {
         isAuthenticated: true,

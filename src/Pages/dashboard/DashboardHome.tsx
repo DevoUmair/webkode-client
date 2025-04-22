@@ -1,4 +1,3 @@
-
 // import { Button } from "@/components/ui/button";
 // import { useEffect, useState } from 'react';
 // import {
@@ -81,7 +80,7 @@
 //       });
 //     }
 //   }, [success]);
-  
+
 //     const timer = setTimeout(() => {
 //       setIsLoading(false);
 //     }, 1000);
@@ -319,7 +318,7 @@
 //               </div>
 //             </CardContent>
 //           </Card>
-//           <Button 
+//           <Button
 //             className='bg-blue-500 hover:bg-blue-600'
 //             onClick={() => setIsDepositModalOpen(true)}
 //           >
@@ -345,7 +344,7 @@
 //           </Card>
 //         </motion.div>
 //       </motion.div>
-//       </motion.div> 
+//       </motion.div>
 
 //       {/* Charts Row */}
 //       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -514,14 +513,27 @@
 
 // export default DashboardHome;
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
-  Activity, ArrowUpRight, Wallet, ArrowDownLeft, UserPlus,
-  TrendingUp, LineChart, Bell, Loader2
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import finteckApi from '@/axios/Axios';
+  Activity,
+  ArrowUpRight,
+  Wallet,
+  ArrowDownLeft,
+  UserPlus,
+  TrendingUp,
+  LineChart,
+  Bell,
+  Loader2,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import finteckApi from "@/axios/Axios";
 
 import {
   Dialog,
@@ -529,9 +541,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import {
   AreaChart,
@@ -579,7 +591,7 @@ const DashboardHome = () => {
 
   const [balance, setBalance] = useState(0);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [depositAmount, setDepositAmount] = useState('');
+  const [depositAmount, setDepositAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const { accessToken, user } = useUser();
 
@@ -618,15 +630,17 @@ const DashboardHome = () => {
   };
 
   useEffect(() => {
-    checkBalance();
-  }, []);
+    if (accessToken) {
+      checkBalance();
+    }
+  }, [accessToken]);
 
   const deposit = async () => {
     const userId = user?.id;
     const amount = parseFloat(depositAmount);
 
     if (isNaN(amount)) {
-      alert('Please enter a valid amount');
+      alert("Please enter a valid amount");
       return;
     }
 
@@ -644,7 +658,7 @@ const DashboardHome = () => {
       console.log("Deposit successful:", response.data);
       setBalance(response.data.balance);
       setIsDepositModalOpen(false);
-      setDepositAmount('');
+      setDepositAmount("");
     } catch (error) {
       console.error("Failed to deposit", error);
     } finally {
@@ -654,6 +668,8 @@ const DashboardHome = () => {
 
   const checkBalance = async () => {
     const userId = user?.id;
+    console.log("ACCESS", accessToken);
+
     try {
       const response = await finteckApi.post(
         "/account/check-balance",
@@ -703,23 +719,20 @@ const DashboardHome = () => {
               variant="outline"
               onClick={() => {
                 setIsDepositModalOpen(false);
-                setDepositAmount('');
+                setDepositAmount("");
               }}
               disabled={isProcessing}
             >
               Cancel
             </Button>
-            <Button
-              onClick={deposit}
-              disabled={isProcessing || !depositAmount}
-            >
+            <Button onClick={deposit} disabled={isProcessing || !depositAmount}>
               {isProcessing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
                 </>
               ) : (
-                'Deposit'
+                "Deposit"
               )}
             </Button>
           </div>
@@ -767,7 +780,7 @@ const DashboardHome = () => {
             </CardContent>
           </Card>
           <Button
-            className='bg-blue-500 hover:bg-blue-600'
+            className="bg-blue-500 hover:bg-blue-600"
             onClick={() => setIsDepositModalOpen(true)}
           >
             Deposit Money
