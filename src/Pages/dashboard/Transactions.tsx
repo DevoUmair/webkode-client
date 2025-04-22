@@ -706,6 +706,7 @@ const Transactions = () => {
 
       console.log('API response:', response.data);
       const totalPages  = Math.ceil(totalTransactions / pageSize);
+      console.log(totalTransactions);
       // Access the data from the response
       let transactions: Transaction[];
       let totalCount: number;
@@ -722,7 +723,9 @@ const Transactions = () => {
       }
 
       setTransactions(transactions);
-      setTotalTransactions(totalCount);
+      if (showAllTransactions) {
+        setTotalTransactions(totalCount);
+      } 
     } catch (error) {
       console.error('Error fetching transactions:', error);
       setTransactions([]);
