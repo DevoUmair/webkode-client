@@ -25,7 +25,9 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
     // useEffect(() => {
     //   console.log("User in protected routes", user);
     // }, [user]);
-
+    // if (user && user.isAuthenticated) {
+    //   return <Navigate to="/dashboard" replace />;
+    // }
     if (user && !user.isSubscribed) {
       return <Navigate to="/pricing" replace />;
     }
