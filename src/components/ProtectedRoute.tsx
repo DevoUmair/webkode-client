@@ -1,6 +1,4 @@
 import { Navigate, Outlet } from "react-router-dom";
-
-import { useEffect } from "react";
 import { useUser } from "@/context/UserContextProvider";
 
 interface ProtectedRouteProps {
