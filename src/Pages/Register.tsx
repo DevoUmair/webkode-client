@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, CheckCircle, LoaderCircle } from "lucide-react";
 import Navbar from "@/components/Shared/Navbar";
 import finteckApi from "@/axios/Axios"; // Adjust the import path as necessary
+import { useUser } from "@/context/UserContextProvider";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -36,7 +37,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
-
+  const { setUser, setAccessToken } = useUser();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,7 +66,12 @@ export default function RegisterPage() {
       console.log("Registration successful:", response.data);
 
       const { accessToken, user } = response.data;
-
+      const userObj = {
+        isAuthenticated: true,
+        ...user,
+      };
+      setUser(userObj);
+      setAccessToken(accessToken);
       // 2. Create the account using access token
       const accountResponse = await finteckApi.post(
         "/account/create-account",
@@ -79,6 +85,7 @@ export default function RegisterPage() {
 
       console.log("Account creation successful:", accountResponse.data);
 
+      setStep(2);
       // TODO: Show success toast, redirect, or set user context
     } catch (error: any) {
       console.error(

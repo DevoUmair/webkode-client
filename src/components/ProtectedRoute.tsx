@@ -8,22 +8,28 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
+  console.log("USER", user);
+  console.log("ISLOading", isLoading);
 
-  if (!user || !user.isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!isLoading) {
+    console.log("USER", user);
 
-  if (user && allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+    if (!user || !user.isAuthenticated) {
+      return <Navigate to="/login" replace />;
+    }
 
-  useEffect(() => {
-    console.log("User in protected routes", user);
-  }, [user]);
+    if (user && allowedRoles && !allowedRoles.includes(user.role)) {
+      return <Navigate to="/unauthorized" replace />;
+    }
 
-  if (user && !user.isSubscribed) {
-    return <Navigate to="/pricing" replace />;
+    // useEffect(() => {
+    //   console.log("User in protected routes", user);
+    // }, [user]);
+
+    if (user && !user.isSubscribed) {
+      return <Navigate to="/pricing" replace />;
+    }
   }
 
   return <Outlet />;

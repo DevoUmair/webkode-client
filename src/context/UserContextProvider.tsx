@@ -25,6 +25,8 @@ type UserContextType = {
   accessToken: string | null;
   setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
   fetchUser: () => Promise<void>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 // Create context with default (undefined for safety)
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -36,6 +38,7 @@ type ProviderProps = {
 function UserContextProvider({ children }: ProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const logout = async () => {
     try {
@@ -50,13 +53,20 @@ function UserContextProvider({ children }: ProviderProps) {
   const hasFetchedRef = useRef(false);
 
   const fetchUser = async () => {
+    setIsLoading(true);
     try {
       const res = await finteckApi.get("/user/token/refresh");
       setAccessToken(res.data.accessToken);
-      setUser(res.data.user);
+      const userObj = {
+        isAuthenticated: true,
+        ...res.data.user,
+      };
+      setUser(userObj);
     } catch (err) {
       setUser(null);
       setAccessToken(null);
+    } finally {
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -74,6 +84,8 @@ function UserContextProvider({ children }: ProviderProps) {
         accessToken,
         setAccessToken,
         fetchUser,
+        isLoading,
+        setIsLoading,
       }}
     >
       {children}
