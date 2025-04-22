@@ -93,6 +93,7 @@ const Transfers = () => {
       console.log(response)
       setSubmitSuccess(true);
       toast.success(response.data.message)
+      setBalance(response.data.senderBalance)
       handleInvoice(response.data.senderId,response.data.receiverId,response.data.amountTransferred)
       form.reset();
     } catch (error: any) {
@@ -305,17 +306,17 @@ const Transfers = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
+                  <div className="text-sm text-muted-foreground font-bold">
+                    Available balance: {balance || "$0"}
+                  </div>
                 <div className="text-sm font-medium">From</div>
                 <div className="text-sm">{user?.id}</div>
                 
-                  <div className="text-sm text-muted-foreground">
-                    Available balance: {balance || "$0"}
-                  </div>
               </div>
 
               <div>
                 <div className="text-sm font-medium">To</div>
-                <div className="text-lg">{destinationAccountId || "Enter destination account ID"}</div>
+                <div className="text-sm">{destinationAccountId || "Enter destination account ID"}</div>
               </div>
 
               <div>

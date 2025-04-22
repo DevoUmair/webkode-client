@@ -523,8 +523,12 @@ import {
   UserPlus,
   TrendingUp,
   LineChart,
+  Mail,
+  CreditCard,
+  BadgeCheck,
   Bell,
   Loader2,
+  Calendar
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -545,7 +549,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import {
   AreaChart,
   Area,
@@ -612,9 +617,26 @@ const DashboardHome = () => {
     show: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
+  const getSubs = async () => {
+    try {
+      const response = await finteckApi.get("/stripe/subscription", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      console.log(response.data)
+      // return response.data;
+    } catch (error: any) {
+      console.error("Error fetching subscription:", error);
+      throw new Error(error?.response?.data?.message || "Failed to get subscription.");
+    }
+  };
+
+
   useEffect(() => {
     if (accessToken) {
       checkBalance();
+      getSubs()
     }
   }, [accessToken]);
 
@@ -641,6 +663,7 @@ const DashboardHome = () => {
       console.log("Deposit successful:", response.data);
       checkBalance();
       setIsDepositModalOpen(false);
+      toast.success(response.data.message)
       setDepositAmount("");
     } catch (error) {
       console.error("Failed to deposit", error);
@@ -672,6 +695,7 @@ const DashboardHome = () => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <Toaster position="top-center" />
       {/* Deposit Modal */}
       <Dialog open={isDepositModalOpen} onOpenChange={setIsDepositModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
@@ -770,8 +794,44 @@ const DashboardHome = () => {
           </Button>
         </motion.div>
 
-        {/* Total Transactions */}
+       
         <motion.div variants={item}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Your Account
+              </CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{user?.fullName}</div>
+              <div className="flex flex-col space-y-3 mt-2">
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <Mail className="h-4 w-4 mr-1" />
+                  <span>{user?.email}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <BadgeCheck className="h-4 w-4 mr-1" />
+                  <span>Status: </span>
+                  <span className={user?.isSubscribed ? "text-emerald-500" : "text-amber-500"}>
+                    {user?.isSubscribed ? "Active" : "Not active"}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  <span>Expires: {user?.isSubscribed || "N/A"}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <CreditCard className="h-4 w-4 mr-1" />
+                  <span>Account: {user?.id}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Total Transactions */}
+        {/* <motion.div variants={item}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -790,7 +850,7 @@ const DashboardHome = () => {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
 
         {/* Remaining Quota */}
         <motion.div variants={item}>
