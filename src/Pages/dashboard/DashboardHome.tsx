@@ -528,7 +528,7 @@ import {
   BadgeCheck,
   Bell,
   Loader2,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -624,23 +624,24 @@ const DashboardHome = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      console.log(response.data)
-      setEndDate(response.data.nextBillingDate)
+      console.log(response.data);
+      setEndDate(response.data.nextBillingDate);
       // return response.data;
     } catch (error: any) {
       console.error("Error fetching subscription:", error);
-      throw new Error(error?.response?.data?.message || "Failed to get subscription.");
+      throw new Error(
+        error?.response?.data?.message || "Failed to get subscription."
+      );
     }
   };
-
 
   useEffect(() => {
     if (accessToken) {
       checkBalance();
-      getSubs()
+      getSubs();
     }
   }, [accessToken]);
-  const [endDate,setEndDate]=useState(null)
+  const [endDate, setEndDate] = useState(null);
   const deposit = async () => {
     const userId = user?.id;
     const amount = parseFloat(depositAmount);
@@ -664,10 +665,13 @@ const DashboardHome = () => {
       console.log("Deposit successful:", response.data);
       checkBalance();
       setIsDepositModalOpen(false);
-      toast.success(response.data.message)
+      toast.success(response.data.message);
       setDepositAmount("");
-    } catch (error) {
-      console.error("Failed to deposit", error);
+    } catch (error: any) {
+      const e = error.response.data;
+      console.log(e.message);
+
+      toast.error(e.message);
     } finally {
       setIsProcessing(false);
     }
@@ -689,8 +693,12 @@ const DashboardHome = () => {
       );
       setBalance(response.data.balance);
       console.log("Your balance is:", response.data.balance);
-    } catch (error) {
-      console.error("Failed to check balance", error);
+    } catch (error: any) {
+      const e = error.response.data;
+      console.log(e.message);
+
+      toast.error(e.message);
+      console.error(error);
     }
   };
 
@@ -795,7 +803,6 @@ const DashboardHome = () => {
           </Button>
         </motion.div>
 
-       
         <motion.div variants={item}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -814,7 +821,11 @@ const DashboardHome = () => {
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                   <BadgeCheck className="h-4 w-4 mr-1" />
                   <span>Status: </span>
-                  <span className={user?.isSubscribed ? "text-emerald-500" : "text-amber-500"}>
+                  <span
+                    className={
+                      user?.isSubscribed ? "text-emerald-500" : "text-amber-500"
+                    }
+                  >
                     {user?.isSubscribed ? "Active" : "Not active"}
                   </span>
                 </div>
@@ -830,8 +841,6 @@ const DashboardHome = () => {
             </CardContent>
           </Card>
         </motion.div>
-
-       
       </motion.div>
     </div>
   );
