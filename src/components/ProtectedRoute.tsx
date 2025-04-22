@@ -1,33 +1,28 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from './Hooks/UseAuth';
-import { useEffect } from 'react';
+import { Navigate, Outlet } from "react-router-dom";
+
+import { useEffect } from "react";
+import { useUser } from "@/context/UserContextProvider";
 
 interface ProtectedRouteProps {
-  allowedRoles?: ('admin' | 'user')[];
+  allowedRoles?: ("admin" | "developer")[];
 }
-interface User{
-  id:string,
-  name:string,
-  role:'admin' | 'user',
-  email:string
-}
-export default function ProtectedRoute({ allowedRoles }:ProtectedRouteProps) {
-  const { isAuthenticated, isSubscribed, user} = useAuth();
 
-  if (!isAuthenticated) {
+export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
+  const { user } = useUser();
+
+  if (user && !user.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" replace />; 
+  if (user && allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />;
   }
- 
 
-  useEffect(()=>{
-    console.log("User in protected routes",user)
-  },[])
+  useEffect(() => {
+    console.log("User in protected routes", user);
+  }, [user]);
 
-  if (!isSubscribed) {
+  if (user && !user.isSubscribed) {
     return <Navigate to="/pricing" replace />;
   }
 
