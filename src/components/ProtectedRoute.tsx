@@ -2,6 +2,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useUser } from "@/context/UserContextProvider";
 import { useEffect, useState  , useRef } from "react";
 import LoadingBar from 'react-top-loading-bar';
+import FullPageLoader from "./Shared/Loader";
 
 interface ProtectedRouteProps {
   allowedRoles?: ("admin" | "developer")[];
@@ -28,14 +29,7 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
 
   if (isLoading || isAuthenticated === null) {
     return (
-      <div style={{height:'100vh' ,  display:'flex', justifyContent:'center' , alignItems:'center'}} >
-         <div style={{width:'100%'}} >
-          <div className="loading-bar-container">
-              <div className="loading-bar"></div>
-            </div>
-            <div>Loading...</div>
-         </div>
-      </div>
+      <FullPageLoader/>
     );
   }
 

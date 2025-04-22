@@ -93,7 +93,7 @@ export default function RegisterPage() {
         "Error during registration or account creation:",
         error.response?.data || error.message
       );
-      toast.error(error.data.message)
+      toast.error(error.response.data.message)
       
     } finally {
       setIsLoading(false);
