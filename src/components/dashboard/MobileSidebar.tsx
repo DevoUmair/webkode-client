@@ -22,7 +22,7 @@ import {
     History,
 } from 'lucide-react';
 
-import { useAuth } from '../Hooks/UseAuth';
+import { useUser } from '@/context/UserContextProvider';
 import { useEffect } from 'react';
 
 type NavItem = {
@@ -32,21 +32,21 @@ type NavItem = {
 };
 
 export function MobileSidebar() {
-    const { user } = useAuth()
+    const { user } = useUser()
 
-    const navItems: NavItem[] = user.role === 'user'
+    // const navItems: NavItem[] = user?.role === 'user'
+    const navItems=user?.role==='developer'
         ? [
             { to: '/dashboard', icon: Home, label: 'Overview' },
             { to: '/dashboard/transfers', icon: ArrowLeftRight, label: 'Transfers' },
             { to: '/dashboard/transactions', icon: History, label: 'Transactions' },
             { to: '/dashboard/invoices', icon: FileText, label: 'Invoices' },
-            { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
         ]
         : [
             { to: '/admin/dashboard', icon: Home, label: 'Overview' },
             { to: '/admin/dashboard/transactions', icon: History, label: 'Transactions' },
-            { to: 'admin/dashboard/userManagement', icon: Users, label: 'Users' },
-            { to: 'admin/dashboard/newAdmin', icon: UserPlus, label: 'New Admin' },
+            { to: '/admin/dashboard/userManagement', icon: Users, label: 'Users' },
+            { to: '/admin/dashboard/newAdmin', icon: UserPlus, label: 'New Admin' },
 
 
         ];

@@ -306,7 +306,7 @@ const Transfers = () => {
             <CardContent className="space-y-4">
               <div>
                 <div className="text-sm font-medium">From</div>
-                <div className="text-lg">{user?.id}</div>
+                <div className="text-sm">{user?.id}</div>
                 
                   <div className="text-sm text-muted-foreground">
                     Available balance: {balance || "$0"}

@@ -42,7 +42,7 @@ function UserContextProvider({ children }: ProviderProps) {
 
   const logout = async () => {
     try {
-      await finteckApi.post("/api/user/logout");
+      await finteckApi.post("/user/logout");
     } catch (err) {
       console.error("Logout error:", err);
     } finally {

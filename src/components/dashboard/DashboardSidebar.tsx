@@ -18,7 +18,6 @@ export function DashboardSidebar() {
     { to: '/dashboard/transfers', icon: <ArrowLeftRight className="h-5 w-5" />, label: 'Transfers' },
     { to: '/dashboard/transactions', icon: <History className="h-5 w-5" />, label: 'Transactions' },
     { to: '/dashboard/invoices', icon: <FileText className="h-5 w-5" />, label: 'Invoices' },
-    { to: '/dashboard/settings', icon: <Settings className="h-5 w-5" />, label: 'Settings' },
   ];
 
   return (
