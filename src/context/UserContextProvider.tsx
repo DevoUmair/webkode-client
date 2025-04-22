@@ -24,6 +24,7 @@ type UserContextType = {
   logout: () => void;
   accessToken: string | null;
   setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
+  fetchUser: () => Promise<void>;
 };
 // Create context with default (undefined for safety)
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -72,6 +73,7 @@ function UserContextProvider({ children }: ProviderProps) {
         logout,
         accessToken,
         setAccessToken,
+        fetchUser,
       }}
     >
       {children}

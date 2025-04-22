@@ -33,7 +33,7 @@ const formSchema = z.object({
 export default function LoginPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { setUser } = useUser();
+  const { setUser, setAccessToken } = useUser();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,6 +67,7 @@ export default function LoginPage() {
           console.log(userObj);
 
           setUser(userObj);
+          setAccessToken(data.user.accessToken);
           navigate("/dashboard");
           toast.success("Login successfull")
         }
