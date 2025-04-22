@@ -93,7 +93,7 @@ const Transfers = () => {
       console.log(response)
       setSubmitSuccess(true);
       toast.success(response.data.message)
-      // setTransactionId(response.data.transactionId || `trx_${Math.floor(Math.random() * 1000000)}`);
+      handleInvoice(response.data.senderId,response.data.receiverId,response.data.amountTransferred)
       form.reset();
     } catch (error: any) {
       setSubmitSuccess(false);
@@ -135,6 +135,30 @@ const Transfers = () => {
       console.error("Failed to check balance", error);
     }
   };
+
+  const handleInvoice=async(senderId:any,receiverId:any,amount:any)=>{
+    console.log("Invoice params:", senderId, receiverId, amount);
+
+    try {
+      const response = await finteckApi.post(
+        "/invoice/generate-invoice",
+        {
+          senderAccountId:senderId,
+          receiverAccountId:receiverId,
+          amount:amount,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log("generateinvoice",response);
+
+    } catch (error) {
+      console.error("generateinvoice", error);
+    }
+  }
   const sourceAccountId = form.watch("sourceAccountId");
   const destinationAccountId = form.watch("destinationAccountId");
   const sourceAccount = mockAccounts.find(acc => acc.id === sourceAccountId);
@@ -168,7 +192,6 @@ const Transfers = () => {
                   <AlertTitle>Transfer Successful</AlertTitle>
                   <AlertDescription>
                     Your transfer has been processed successfully.<br />
-                    {/* Transaction ID: {transactionId} */}
                   </AlertDescription>
                 </Alert>
               ) : (
