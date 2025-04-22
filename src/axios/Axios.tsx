@@ -1,10 +1,9 @@
-import axios from 'axios';
-
-// Access the environment variable using import.meta.env
-const server = 'http://localhost:5000'
+import axios from "axios";
+const server = "http://localhost:5000";
 
 const finteckApi = axios.create({
-    baseURL: `${server}/api`,
+  baseURL: `${server}/api`,
+  withCredentials: true,
 });
 
 export default finteckApi;
