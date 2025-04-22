@@ -49,29 +49,46 @@ export default function RegisterPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log(values);
   
     const data = {     
-        fullName : values.name,
-        email : values.email,
-        role : 'developer',
-        password : values.password,
-    }
-    
+      fullName: values.name,
+      email: values.email,
+      role: 'developer',
+      password: values.password,
+    };
+  
     try {
+      // 1. Register the user
       const response = await finteckApi.post('/user/register', data, {
-        withCredentials: true, // sends cookies like refreshToken
+        withCredentials: true,
       });
   
       console.log('Registration successful:', response.data);
-
+  
+      const { accessToken, user } = response.data;
+  
+      // 2. Create the account using access token
+      const accountResponse = await finteckApi.post(
+        '/account/create-account',
+        { userId: user.id }, // include optional cnic if needed
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+  
+      console.log('Account creation successful:', accountResponse.data);
+  
+      // TODO: Show success toast, redirect, or set user context
   
     } catch (error: any) {
-        console.log(error);
+      console.error('Error during registration or account creation:', error.response?.data || error.message);
     } finally {
       setIsLoading(false);
     }
   }
+  
   
 
   return (
