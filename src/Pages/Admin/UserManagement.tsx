@@ -1,5 +1,5 @@
 // src/components/admin/UserManagement.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -24,46 +24,49 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'developer';
   subscriptionStatus: 'active' | 'cancelled' | 'expired';
-  joinDate: string;
-  lastActive: string;
 }
 
+
+import finteckApi from '@/axios/Axios';
+import { useUser } from '@/context/UserContextProvider';
 export function UserManagement() {
   // Mock user data
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
-      role: 'user',
-      subscriptionStatus: 'active',
-      joinDate: '2023-01-15',
-      lastActive: '2023-06-20'
-    },
-    {
-      id: '2',
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      role: 'user',
-      subscriptionStatus: 'active',
-      joinDate: '2023-02-10',
-      lastActive: '2023-06-18'
-    },
-    {
-      id: '3',
-      name: 'Admin User',
-      email: 'admin@example.com',
-      role: 'admin',
-      subscriptionStatus: 'active',
-      joinDate: '2022-11-05',
-      lastActive: '2023-06-21'
-    },
-  ]);
+  // const [users, setUsers] = useState<User[]>([
+  //   {
+  //     id: '1',
+  //     name: 'John Doe',
+  //     email: 'john@example.com',
+  //     role: 'developer',
+  //     subscriptionStatus: 'active',
+  //     joinDate: '2023-01-15',
+  //     lastActive: '2023-06-20'
+  //   },
+  //   {
+  //     id: '2',
+  //     name: 'Jane Smith',
+  //     email: 'jane@example.com',
+  //     role: 'developer',
+  //     subscriptionStatus: 'active',
+  //     joinDate: '2023-02-10',
+  //     lastActive: '2023-06-18'
+  //   },
+  //   {
+  //     id: '3',
+  //     name: 'Admin User',
+  //     email: 'admin@example.com',
+  //     role: 'admin',
+  //     subscriptionStatus: 'active',
+  //     joinDate: '2022-11-05',
+  //     lastActive: '2023-06-21'
+  //   },
+  // ]);
+  const {accessToken}=useUser()
+  const [users,setUsers]=useState<User[]>()
 
   const cancelSubscription = (userId: string) => {
-    setUsers(users.map(user => 
+    setUsers(users?.map(user => 
       user.id === userId 
         ? { ...user, subscriptionStatus: 'cancelled' } 
         : user
@@ -71,7 +74,7 @@ export function UserManagement() {
   };
 
   const activateSubscription = (userId: string) => {
-    setUsers(users.map(user => 
+    setUsers(users?.map(user => 
       user.id === userId 
         ? { ...user, subscriptionStatus: 'active' } 
         : user
@@ -91,6 +94,34 @@ export function UserManagement() {
     }
   };
 
+  useEffect(()=>{
+    getUsers()
+  },[])
+  const getUsers = async () => {
+    try {
+      const response = await finteckApi.get('/admin/users', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      
+      // Assuming the response has a data field with users
+      // const users = response.data;
+      setUsers(response.data)
+      console.log("Fetched users:", users);
+  
+      return users;
+  
+    } catch (error: any) {
+      const errorMsg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to fetch users";
+  
+      console.error("Error fetching users:", errorMsg);
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -105,13 +136,13 @@ export function UserManagement() {
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead>Last Active</TableHead>
+              {/* <TableHead>Joined</TableHead>
+              <TableHead>Last Active</TableHead> */}
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
+            {users?.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
@@ -133,18 +164,18 @@ export function UserManagement() {
                 <TableCell>
                   {getStatusBadge(user.subscriptionStatus)}
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     {new Date(user.joinDate).toLocaleDateString()}
                   </div>
-                </TableCell>
-                <TableCell>
+                </TableCell> */}
+                {/* <TableCell>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     {new Date(user.lastActive).toLocaleDateString()}
                   </div>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

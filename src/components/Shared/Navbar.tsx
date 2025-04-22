@@ -14,12 +14,14 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-
+import { UserDropdown } from '../dashboard/UserDropdown';
+import { useUser } from '@/context/UserContextProvider';
 
 export default function Navbar() {
-//   const { theme, setTheme } = useTheme();
+  //   const { theme, setTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const navigate=useNavigate()
+  const {user}=useUser()
+  const navigate = useNavigate()
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-blur:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -42,10 +44,10 @@ export default function Navbar() {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuItem>
-                <Link to="/" className={navigationMenuTriggerStyle()}>
-                  Home
-                </Link>
-              </NavigationMenuItem>
+                  <Link to="/" className={navigationMenuTriggerStyle()}>
+                    Home
+                  </Link>
+                </NavigationMenuItem>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <Link to="/pricing" className={navigationMenuTriggerStyle()}>
@@ -60,20 +62,23 @@ export default function Navbar() {
             </NavigationMenuList>
           </NavigationMenu>
 
-        
+
+          {user?.isAuthenticated ? (
+            <UserDropdown />
+          ) : (
 
             <div className="flex items-center gap-2">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">
-                Login
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600">
-                Sign Up
-              </Button>
-            </Link>
-            {/* <Button
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600">
+                  Sign Up
+                </Button>
+              </Link>
+              {/* <Button
               variant="ghost"
               size="icon"
               aria-label="Toggle theme"
@@ -83,7 +88,8 @@ export default function Navbar() {
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               theme
               </Button> */}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Mobile Navigation */}
@@ -98,13 +104,13 @@ export default function Navbar() {
             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             theme
           </Button> */}
-          
+
           <Button
-            variant="ghost" 
+            variant="ghost"
             size="icon"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8"/>}
+            {mobileMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
           </Button>
         </div>
       </div>
@@ -119,29 +125,29 @@ export default function Navbar() {
           className="md:hidden border-t"
         >
           <div className="container py-4 flex flex-col gap-4">
-          <Link 
-              to="/" 
+            <Link
+              to="/"
               className="px-4 py-2 hover:bg-accent rounded-md"
               onClick={() => setMobileMenuOpen(false)}
             >
               Home
             </Link>
-            <Link 
-              to="/pricing" 
+            <Link
+              to="/pricing"
               className="px-4 py-2 hover:bg-accent rounded-md"
               onClick={() => setMobileMenuOpen(false)}
             >
               Pricing
             </Link>
-            <Link 
-              to="/about" 
+            <Link
+              to="/about"
               className="px-4 py-2 hover:bg-accent rounded-md"
               onClick={() => setMobileMenuOpen(false)}
             >
               About
             </Link>
-            
-            
+
+
             <div className="flex items-center gap-2 pt-2 border-t">
               <Link to="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="outline" className="w-full">

@@ -50,30 +50,53 @@ export default function LoginPage() {
       const data = response.data;
       console.log(data);
 
-      if (data.user.isSubscribed) {
-        // navigate('/dashboard');
-        if (data.user.role === "admin") {
+
+      if (data.user.role === "admin") {
           const userObj = {
             isAuthenticated: true,
             ...data,
+            isSubscribed: true,
           };
           setUser(userObj);
           navigate("/admin/dashboard");
-        } else if (data.user.role === "developer") {
-          const userObj = {
-            isAuthenticated: true,
-            ...data.user,
-          };
-          console.log(userObj);
-
-          setUser(userObj);
-          setAccessToken(data.accessToken);
-          navigate("/dashboard");
-          toast.success("Login successfull");
         }
-      } else {
-        navigate("/pricing");
-      }
+       else if(data.user.role==='developer'){
+            if(data.user.isSubscribed){
+              const userObj = {
+                isAuthenticated: true,
+                ...data.user,
+              };
+              console.log(userObj);
+    
+              setUser(userObj);
+              setAccessToken(data.accessToken);
+              navigate("/dashboard");
+              toast.success("Login successfull");
+            }else{
+               navigate("/pricing");
+            }
+       }
+
+      // if (data.user.isSubscribed) {
+      //   navigate('/dashboard');
+        
+      //   } else if (data.user.role === "developer") {
+      //     const userObj = {
+      //       isAuthenticated: true,
+      //       ...data.user,
+      //     };
+      //     console.log(userObj);
+
+      //     setUser(userObj);
+      //     setAccessToken(data.accessToken);
+      //     navigate("/dashboard");
+      //     toast.success("Login successfull");
+      //   }
+      // } else {
+      //   // navigate("/pricing");
+      //   navigate("/dashboard");
+
+      // }
     } catch (error: any) {
       // console.log(error)
       toast.error(error.response.data.message);

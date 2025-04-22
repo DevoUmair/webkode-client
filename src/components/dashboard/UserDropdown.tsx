@@ -10,24 +10,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, User } from 'lucide-react';
+import { LogOut, Settings, User, LayoutDashboard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Hooks/UseAuth';
 import { useUser } from '@/context/UserContextProvider';
 import finteckApi from '@/axios/Axios';
+import { useState } from 'react';
+import FullPageLoader from '../Shared/Loader';
 
 export function UserDropdown() {
-  const {user}=useUser()
-  const handleLogout =async () => {
+  const { user, logout } = useUser()
+  const [loading, setLoading] = useState(false)
+  const handleLogout = async () => {
+    setLoading(true)
     try {
-      const response = await finteckApi.post("/user/logout");
+      const response = await logout()
       console.log(response);
     } catch (error: any) {
       console.log(error)
-    } 
+    } finally {
+      setLoading(false)
+    }
     localStorage.removeItem('token');
     window.location.href = '/login';
   };
+
+  if (loading) {
+    return <FullPageLoader />
+  }
 
   return (
     <DropdownMenu>
@@ -50,22 +60,31 @@ export function UserDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link to="/dashboard/settings" className="w-full">
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/dashboard/settings" className="w-full">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-            </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
+          {user?.role === 'admin' ? (
+            <DropdownMenuItem asChild>
+              <Link to="/admin/dashboard" className="w-full">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem asChild>
+              <Link to="/dashboard" className="w-full">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
-          <LogOut className="mr-2 h-4 w-4"/>
+          <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

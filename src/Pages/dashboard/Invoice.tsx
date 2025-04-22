@@ -85,7 +85,7 @@
 //   const [generatedInvoice, setGeneratedInvoice] = useState<any | null>(null);
 //   const [error, setError] = useState<string | null>(null);
 //   const [activeTab, setActiveTab] = useState("generate");
-  
+
 //   // Form setup
 //   const form = useForm<z.infer<typeof invoiceSchema>>({
 //     resolver: zodResolver(invoiceSchema),
@@ -99,20 +99,20 @@
 //     setIsSubmitting(true);
 //     setError(null);
 //     setGeneratedInvoice(null);
-    
+
 //     try {
 //       // In a real app, this would be an API call to generate the invoice
 //       // Simulate API call
 //       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
 //       // Format dates for display
 //       const startDateStr = data.startDate.toLocaleDateString();
 //       const endDateStr = data.endDate.toLocaleDateString();
-      
+
 //       // Generate random data for the mock invoice
 //       const transactionCount = Math.floor(Math.random() * 30) + 10;
 //       const totalAmount = (Math.random() * 100 + 20).toFixed(2);
-      
+
 //       // Create a mock invoice
 //       const newInvoice = {
 //         id: `INV-${Date.now()}`,
@@ -122,7 +122,7 @@
 //         status: "generated",
 //         transactions: transactionCount,
 //       };
-      
+
 //       setGeneratedInvoice(newInvoice);
 //     } catch (error) {
 //       setError("Failed to generate invoice. Please try again.");
@@ -178,7 +178,7 @@
 //         transition={{ duration: 0.4 }}
 //       >
 //         <h1 className="text-2xl font-bold mb-6">Invoices</h1>
-        
+
 //         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 //           <TabsList className="grid grid-cols-2 mb-8">
 //             <TabsTrigger value="generate" className="flex items-center">
@@ -190,7 +190,7 @@
 //               Invoice History
 //             </TabsTrigger>
 //           </TabsList>
-          
+
 //           <TabsContent value="generate">
 //             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 //               <div className="md:col-span-2">
@@ -201,7 +201,7 @@
 //                       Select a date range to generate an invoice for all transactions in that period.
 //                     </CardDescription>
 //                   </CardHeader>
-                  
+
 //                   <CardContent>
 //                     {error && (
 //                       <Alert variant="destructive" className="mb-6">
@@ -210,7 +210,7 @@
 //                         <AlertDescription>{error}</AlertDescription>
 //                       </Alert>
 //                     )}
-                    
+
 //                     {generatedInvoice ? (
 //                       <Alert className="bg-green-500/10 text-green-500 border-green-500/20">
 //                         <CheckCircle className="h-4 w-4" />
@@ -227,7 +227,7 @@
 //                             Total amount: <strong>{formatCurrency(generatedInvoice.amount)}</strong> for{" "}
 //                             <strong>{generatedInvoice.transactions}</strong> transactions.
 //                           </p>
-                          
+
 //                           <div className="flex gap-3 mt-4">
 //                             <Button className="flex items-center">
 //                               <Download className="w-4 h-4 mr-2" />
@@ -260,7 +260,7 @@
 //                                 </FormItem>
 //                               )}
 //                             />
-                            
+
 //                             <FormField
 //                               control={form.control}
 //                               name="endDate"
@@ -279,7 +279,7 @@
 //                               )}
 //                             />
 //                           </div>
-                          
+
 //                           <Button 
 //                             type="submit" 
 //                             className="w-full" 
@@ -300,7 +300,7 @@
 //                   </CardContent>
 //                 </Card>
 //               </div>
-              
+
 //               <div>
 //                 <Card>
 //                   <CardHeader>
@@ -311,7 +311,7 @@
 //                       Invoices summarize all transactions within the specified date range, 
 //                       including transaction counts and total amounts.
 //                     </p>
-                    
+
 //                     <div className="space-y-2">
 //                       <h4 className="font-medium">What's included:</h4>
 //                       <ul className="list-disc pl-5 space-y-1">
@@ -322,7 +322,7 @@
 //                         <li>Invoice reference number</li>
 //                       </ul>
 //                     </div>
-                    
+
 //                     <div className="border-t pt-4">
 //                       <p className="text-muted-foreground">
 //                         Invoices are generated as downloadable PDF documents and are also stored 
@@ -334,7 +334,7 @@
 //               </div>
 //             </div>
 //           </TabsContent>
-          
+
 //           <TabsContent value="history">
 //             <Card>
 //               <CardHeader>
@@ -400,7 +400,7 @@
 //                           </td>
 //                         </tr>
 //                       ))}
-                      
+
 //                       {/* Include the generated invoice if it exists */}
 //                       {generatedInvoice && (
 //                         <tr>
@@ -481,7 +481,11 @@ import {
   ChevronDown,
   Eye
 } from "lucide-react";
-
+import finteckApi from "@/axios/Axios";
+import { useUser } from "@/context/UserContextProvider";
+import Invoice from "@/components/InvoiceGenerator";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import toast, { Toaster } from "react-hot-toast";
 // Form schema
 const invoiceSchema = z.object({
   startDate: z.date({
@@ -539,15 +543,17 @@ const Invoices = () => {
   const [generatedInvoice, setGeneratedInvoice] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("generate");
+  // const [invoiceData, setInvoiceData] = useState(null)
+  const [invoiceData, setInvoiceData] = useState<null>(null);
   const [viewingInvoice, setViewingInvoice] = useState<any | null>(null);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
-  
+  const { accessToken,user } = useUser()
   // Effect to handle window resizing for responsive behavior
   useState(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
@@ -567,37 +573,38 @@ const Invoices = () => {
     setIsSubmitting(true);
     setError(null);
     setGeneratedInvoice(null);
-    
+
     try {
-      // In a real app, this would be an API call to generate the invoice
-      // Simulate API call
+
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Format dates for display
-      const startDateStr = data.startDate.toLocaleDateString();
-      const endDateStr = data.endDate.toLocaleDateString();
-      
-      // Generate random data for the mock invoice
-      const transactionCount = Math.floor(Math.random() * 30) + 10;
-      const totalAmount = (Math.random() * 100 + 20).toFixed(2);
-      
-      // Create a mock invoice
-      const newInvoice = {
-        id: `INV-${Date.now()}`,
-        period: `${startDateStr} - ${endDateStr}`,
-        created: new Date().toLocaleDateString(),
-        amount: parseFloat(totalAmount),
-        status: "generated",
-        transactions: transactionCount,
-      };
-      
-      setGeneratedInvoice(newInvoice);
-      // Auto-switch to history tab on mobile after generating
-      if (isMobile) {
-        setActiveTab("history");
+
+
+      if (!data.startDate || !data.endDate) {
+        console.log("Start and end dates are required");
       }
-    } catch (error) {
-      setError("Failed to generate invoice. Please try again.");
+
+      const start = new Date(data.startDate);
+      const end = new Date(data.endDate);
+
+      const query = new URLSearchParams({
+        startDate: start.toISOString().slice(0, 10), // YYYY-MM-DD
+        endDate: end.toISOString().slice(0, 10),
+      }).toString();
+
+
+
+      const response = await finteckApi.get(`/invoice/get-invoice/?${query}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      console.log("invpice", response)
+      setInvoiceData(response.data)
+      setGeneratedInvoice(response.data)
+ 
+    } catch (error:any) {
+      toast.error(error.response.data.message)
+      setError(error.response.data.message)
     } finally {
       setIsSubmitting(false);
     }
@@ -643,7 +650,7 @@ const Invoices = () => {
   };
 
   // Mobile invoice detail view component
-  const InvoiceDetailView = ({ invoice, onClose }:any) => (
+  const InvoiceDetailView = ({ invoice, onClose }: any) => (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Invoice Detail</CardTitle>
@@ -676,16 +683,12 @@ const Invoices = () => {
           <span className="font-medium">Status:</span>
           {getStatusBadge(invoice.status)}
         </div>
-        <Button size="sm" className="w-full mt-4 flex items-center justify-center">
-          <Download className="w-4 h-4 mr-2" />
-          Download PDF
-        </Button>
       </CardContent>
     </Card>
   );
 
   // Custom DatePicker component
-  const DatePicker = ({ date, setDate, placeholder }:any) => (
+  const DatePicker = ({ date, setDate, placeholder }: any) => (
     <Popover>
       <PopoverTrigger asChild>
         <Button
@@ -708,7 +711,7 @@ const Invoices = () => {
   );
 
   // Mobile card view for invoices
-  const renderMobileInvoiceCard = (invoice:any) => (
+  const renderMobileInvoiceCard = (invoice: any) => (
     <Card key={invoice.id} className="mb-3">
       <CardContent className="pt-4">
         <div className="flex justify-between items-start mb-2">
@@ -721,9 +724,9 @@ const Invoices = () => {
           <span className="font-medium">{formatCurrency(invoice.amount)}</span>
         </div>
         <div className="flex justify-between mt-3">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="text-xs"
             onClick={() => setViewingInvoice(invoice)}
           >
@@ -741,34 +744,35 @@ const Invoices = () => {
 
   return (
     <div className="container mx-auto px-4">
+      <Toaster/>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Invoices</h1>
-        
+        <h1 className="text-xl sm:text-2xl font-bold">Invoices</h1>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 mb-4 sm:mb-8">
-            <TabsTrigger value="generate" className="flex items-center">
+            {/* <TabsTrigger value="generate" className="flex items-center">
               <FileText className="w-4 h-4 mr-2 hidden sm:inline" />
               Generate Invoice
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center">
+            </TabsTrigger> */}
+            {/* <TabsTrigger value="history" className="flex items-center">
               <Clock className="w-4 h-4 mr-2 hidden sm:inline" />
               Invoice History
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
-          
+
           <TabsContent value="generate">
             {/* Mobile invoice detail view (if active) */}
             {isMobile && viewingInvoice && (
-              <InvoiceDetailView 
-                invoice={viewingInvoice} 
+              <InvoiceDetailView
+                invoice={viewingInvoice}
                 onClose={() => setViewingInvoice(null)}
               />
             )}
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="lg:col-span-2">
                 <Card>
@@ -778,7 +782,7 @@ const Invoices = () => {
                       Select a date range to generate an invoice for all transactions in that period.
                     </CardDescription>
                   </CardHeader>
-                  
+
                   <CardContent>
                     {error && (
                       <Alert variant="destructive" className="mb-4 sm:mb-6">
@@ -787,7 +791,7 @@ const Invoices = () => {
                         <AlertDescription>{error}</AlertDescription>
                       </Alert>
                     )}
-                    
+
                     {generatedInvoice ? (
                       <Alert className="bg-green-500/10 text-green-500 border-green-500/20">
                         <CheckCircle className="h-4 w-4" />
@@ -797,23 +801,34 @@ const Invoices = () => {
                             Your invoice has been generated for the period{" "}
                             <strong>{generatedInvoice.period}</strong>.
                           </p>
-                          <p>
-                            Invoice ID: <strong>{generatedInvoice.id}</strong>
-                          </p>
-                          <p>
-                            Total amount: <strong>{formatCurrency(generatedInvoice.amount)}</strong> for{" "}
-                            <strong>{generatedInvoice.transactions}</strong> transactions.
-                          </p>
-                          
-                          <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                            <Button className="flex items-center justify-center">
-                              <Download className="w-4 h-4 mr-2" />
-                              Download PDF
+    
+                          {invoiceData ? (
+                            <PDFDownloadLink
+                              document={<Invoice transactions={invoiceData}/>}
+                              fileName="transactions_invoice.pdf"
+                              className="w-full" // Add proper styling
+                            >
+                              {({ loading }) => (
+                                <Button disabled={loading} className="w-full">
+                                  {loading ? (
+                                    <>
+                                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                                      Generating PDF...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Download className="mr-2 h-4 w-4" />
+                                      Download PDF
+                                    </>
+                                  )}
+                                </Button>
+                              )}
+                            </PDFDownloadLink>
+                          ) : (
+                            <Button variant="outline" disabled>
+                              No data available
                             </Button>
-                            <Button variant="outline" onClick={() => setGeneratedInvoice(null)}>
-                              Generate Another
-                            </Button>
-                          </div>
+                          )}
                         </AlertDescription>
                       </Alert>
                     ) : (
@@ -837,7 +852,7 @@ const Invoices = () => {
                                 </FormItem>
                               )}
                             />
-                            
+
                             <FormField
                               control={form.control}
                               name="endDate"
@@ -856,10 +871,10 @@ const Invoices = () => {
                               )}
                             />
                           </div>
-                          
-                          <Button 
-                            type="submit" 
-                            className="w-full bg-blue-500 hover-bg-blue-600" 
+
+                          <Button
+                            type="submit"
+                            className="w-full bg-blue-500 hover:bg-blue-600"
                             disabled={isSubmitting}
                           >
                             {isSubmitting ? (
@@ -877,7 +892,7 @@ const Invoices = () => {
                   </CardContent>
                 </Card>
               </div>
-              
+
               <div className="hidden sm:block">
                 <Card>
                   <CardHeader>
@@ -885,10 +900,10 @@ const Invoices = () => {
                   </CardHeader>
                   <CardContent className="space-y-4 text-sm">
                     <p>
-                      Invoices summarize all transactions within the specified date range, 
+                      Invoices summarize all transactions within the specified date range,
                       including transaction counts and total amounts.
                     </p>
-                    
+
                     <div className="space-y-2">
                       <h4 className="font-medium">What's included:</h4>
                       <ul className="list-disc pl-5 space-y-1">
@@ -899,10 +914,10 @@ const Invoices = () => {
                         <li>Invoice reference number</li>
                       </ul>
                     </div>
-                    
+
                     <div className="border-t pt-4">
                       <p className="text-muted-foreground">
-                        Invoices are generated as downloadable PDF documents and are also stored 
+                        Invoices are generated as downloadable PDF documents and are also stored
                         in your account history for future reference.
                       </p>
                     </div>
@@ -911,16 +926,16 @@ const Invoices = () => {
               </div>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="history">
             {/* Mobile invoice detail view (if active) */}
             {isMobile && viewingInvoice && (
-              <InvoiceDetailView 
-                invoice={viewingInvoice} 
+              <InvoiceDetailView
+                invoice={viewingInvoice}
                 onClose={() => setViewingInvoice(null)}
               />
             )}
-          
+
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg sm:text-xl">Invoice History</CardTitle>
@@ -934,7 +949,7 @@ const Invoices = () => {
                   <div className="space-y-2">
                     {/* Show the generated invoice first if it exists */}
                     {generatedInvoice && renderMobileInvoiceCard(generatedInvoice)}
-                    
+
                     {/* Then show the mock invoices */}
                     {mockInvoices.map(invoice => renderMobileInvoiceCard(invoice))}
                   </div>
@@ -997,7 +1012,7 @@ const Invoices = () => {
                             </td>
                           </tr>
                         )}
-                        
+
                         {/* Then show the mock invoices */}
                         {mockInvoices.map((invoice) => (
                           <tr key={invoice.id}>

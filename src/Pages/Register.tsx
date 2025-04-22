@@ -19,7 +19,8 @@ import { ArrowRight, CheckCircle, LoaderCircle } from "lucide-react";
 import Navbar from "@/components/Shared/Navbar";
 import finteckApi from "@/axios/Axios"; // Adjust the import path as necessary
 import { useUser } from "@/context/UserContextProvider";
-
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -83,14 +84,17 @@ export default function RegisterPage() {
       );
 
       console.log("Account creation successful:", accountResponse.data);
-
+  
       setStep(2);
       // TODO: Show success toast, redirect, or set user context
+      toast.success(response.data.message)
     } catch (error: any) {
       console.error(
         "Error during registration or account creation:",
         error.response?.data || error.message
       );
+      toast.error(error.data.message)
+      
     } finally {
       setIsLoading(false);
     }
@@ -99,6 +103,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      <Toaster position="top-center"/>
       <div className="flex-1 container max-w-screen-xl mx-auto px-4 py-12 md:py-24">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
           <motion.div
