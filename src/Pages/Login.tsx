@@ -58,7 +58,9 @@ export default function LoginPage() {
             isSubscribed: true,
           };
           setUser(userObj);
+          setAccessToken(data.accessToken);
           navigate("/admin/dashboard");
+          toast.success("Login successfull");
         }
        else if(data.user.role==='developer'){
             if(data.user.isSubscribed){

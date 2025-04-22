@@ -1,5 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useUser } from "@/context/UserContextProvider";
+import { useEffect, useState  , useRef } from "react";
+import LoadingBar from 'react-top-loading-bar';
 
 interface ProtectedRouteProps {
   allowedRoles?: ("admin" | "developer")[];
@@ -7,29 +9,42 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const { user, isLoading } = useUser();
-  console.log("USER", user);
-  console.log("ISLOading", isLoading);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const ref = useRef(null);
 
+  console.log(user);
 
-  if (!isLoading) {
-    console.log("USER", user);
-
-    if (!user || !user.isAuthenticated) {
-      return <Navigate to="/login" replace />;
+  useEffect(() => {
+    if (!isLoading && user) {
+      console.log(user?.role);
+      setIsAuthenticated(user.isAuthenticated);
+      if (user.isAuthenticated) {
+        ref.current?.complete();
+      } else {
+        ref.current?.start();
+      }
     }
+  }, [user, isLoading]);
 
-    if (user && allowedRoles && !allowedRoles.includes(user.role)) {
-      return <Navigate to="/unauthorized" replace />;
-    }
+  if (isLoading || isAuthenticated === null) {
+    return (
+      <div style={{height:'100vh' ,  display:'flex', justifyContent:'center' , alignItems:'center'}} >
+         <div style={{width:'100%'}} >
+          <div className="loading-bar-container">
+              <div className="loading-bar"></div>
+            </div>
+            <div>Loading...</div>
+         </div>
+      </div>
+    );
+  }
 
-    // useEffect(() => {
-    //   console.log("User in protected routes", user);
-    // }, [user]);
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
- 
-    // if (user && !user.isSubscribed) {
-    //   return <Navigate to="/pricing" replace />;
-    // }
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return <Outlet />;

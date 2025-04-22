@@ -89,6 +89,8 @@ export function UserManagement() {
         return <Badge variant="destructive">Cancelled</Badge>;
       case 'expired':
         return <Badge variant="secondary">Expired</Badge>;
+        case 'inactive':
+          return <Badge variant="destructive">inactive</Badge>;
       default:
         return <Badge>Unknown</Badge>;
     }
@@ -99,7 +101,7 @@ export function UserManagement() {
   },[])
   const getUsers = async () => {
     try {
-      const response = await finteckApi.get('/admin/users', {
+      const response = await finteckApi.get('/admin/users-data', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -108,6 +110,7 @@ export function UserManagement() {
       // Assuming the response has a data field with users
       // const users = response.data;
       setUsers(response.data)
+      console.log(response?.data);
       console.log("Fetched users:", users);
   
       return users;
@@ -135,6 +138,7 @@ export function UserManagement() {
               <TableHead>User</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Balance</TableHead>
               <TableHead>Status</TableHead>
               {/* <TableHead>Joined</TableHead>
               <TableHead>Last Active</TableHead> */}
@@ -147,7 +151,7 @@ export function UserManagement() {
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" />
-                    {user.name}
+                    {user.fullName}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -160,6 +164,11 @@ export function UserManagement() {
                   <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
                     {user.role}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    {user.balance} $
+                  </div>
                 </TableCell>
                 <TableCell>
                   {getStatusBadge(user.subscriptionStatus)}
