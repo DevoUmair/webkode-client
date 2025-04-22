@@ -657,7 +657,7 @@ const Transactions = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
   const [showAllTransactions, setShowAllTransactions] = useState(true);
-  const { accessToken } = useUser();
+  const { accessToken , user} = useUser();
   
   useEffect(() => {
     const handleResize = () => {
@@ -773,6 +773,9 @@ const Transactions = () => {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  console.log("user tr" , user);
+  console.log(transactions);
+
   const renderDesktopTable = () => (
     <Table>
       <TableHeader>
@@ -781,6 +784,7 @@ const Transactions = () => {
           <TableHead>From</TableHead>
           <TableHead>To</TableHead>
           <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="text-right">Transaction Type</TableHead>
           <TableHead className="text-center">Transaction ID</TableHead>
         </TableRow>
       </TableHeader>
@@ -791,6 +795,7 @@ const Transactions = () => {
               <TableCell><div className="h-5 bg-muted rounded w-24"></div></TableCell>
               <TableCell><div className="h-5 bg-muted rounded w-36"></div></TableCell>
               <TableCell><div className="h-5 bg-muted rounded w-36"></div></TableCell>
+              <TableCell><div className="h-5 bg-muted rounded w-24 ml-auto"></div></TableCell>
               <TableCell><div className="h-5 bg-muted rounded w-24 ml-auto"></div></TableCell>
               <TableCell><div className="h-5 bg-muted rounded w-20 mx-auto"></div></TableCell>
             </TableRow>
@@ -813,6 +818,13 @@ const Transactions = () => {
               </TableCell>
               <TableCell className="text-right font-medium text-green-500">
                 {formatCurrency(transaction.amount)}
+              </TableCell>
+              <TableCell className="text-center text-xs text-muted-foreground">
+                  <div>
+                    {user?.id === String(transaction.senderAccountId.userId._id) ? "Sent" : "Received"}
+                  </div>
+
+
               </TableCell>
               <TableCell className="text-center text-xs text-muted-foreground">
                 {transaction._id.substring(0, 8)}...
