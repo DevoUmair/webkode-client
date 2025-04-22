@@ -596,24 +596,6 @@ const DashboardHome = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { accessToken, user } = useUser();
 
-  // Simulate loading
-  useEffect(() => {
-    console.log("SUCCESS IS", success);
-
-    if (success === "true") {
-      fetchUser().then(() => {
-        query.delete("success");
-        navigate(`${location.pathname}?${query.toString()}`, { replace: true });
-      });
-    }
-
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [success, fetchUser, query, location, navigate]);
-
   // Animation variants
   const container = {
     hidden: { opacity: 0 },
@@ -657,7 +639,7 @@ const DashboardHome = () => {
         }
       );
       console.log("Deposit successful:", response.data);
-      checkBalance()
+      checkBalance();
       setIsDepositModalOpen(false);
       setDepositAmount("");
     } catch (error) {
