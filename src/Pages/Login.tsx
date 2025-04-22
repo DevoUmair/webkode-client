@@ -54,7 +54,7 @@ export default function LoginPage() {
       if (data.user.role === "admin") {
           const userObj = {
             isAuthenticated: true,
-            ...data,
+            ...data.user,
             isSubscribed: true,
           };
           setUser(userObj);
