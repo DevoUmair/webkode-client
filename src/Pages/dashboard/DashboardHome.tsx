@@ -600,6 +600,7 @@ const DashboardHome = () => {
   const [depositAmount, setDepositAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const { accessToken, user } = useUser();
+  const [lastUpdated,setLastUpdated]=useState(null)
 
   // Animation variants
   const container = {
@@ -687,6 +688,7 @@ const DashboardHome = () => {
           },
         }
       );
+      setLastUpdated(response.data.lastUpdate)
       setBalance(response.data.balance);
       console.log("Your balance is:", response.data.balance);
     } catch (error) {
@@ -781,9 +783,10 @@ const DashboardHome = () => {
               <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
                 <span className="flex items-center text-emerald-500">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
-                  +12%
+                  Last Updated:
                 </span>
-                <span>since last settlement</span>
+                {/* const formattedDateTime = new Date(dateString).toLocaleString(); */}
+                <span> {lastUpdated ? new Date(lastUpdated).toLocaleString() : "N/A"}</span>
               </div>
             </CardContent>
           </Card>
