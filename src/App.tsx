@@ -22,12 +22,14 @@ import { UserManagement } from "./Pages/Admin/UserManagement";
 import { CreateAdmin } from "./Pages/Admin/CreateAdmin";
 
 import SubscriptionSuccess from "./Pages/SubcriptionSuccess";
+import AuthRedirect from "./components/AuthRedirect";
 function App() {
 
   return (
     <>
       <BrowserRouter>
         <Routes>
+        <Route element={<AuthRedirect />}>
           <Route path="/" element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
@@ -35,6 +37,7 @@ function App() {
           <Route path="about" element={<AboutPage />} />
           <Route path="subscription/success" element={<SubscriptionSuccess />} />
           <Route path="unauthorized" element={<Unauthorized />} />
+        </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["developer"]} />}>
             <Route element={<DashboardLayout />}>
