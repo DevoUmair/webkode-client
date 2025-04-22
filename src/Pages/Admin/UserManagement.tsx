@@ -16,7 +16,8 @@ import {
   Mail,
   Calendar,
   XCircle,
-  CheckCircle
+  CheckCircle,
+  Loader2
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -124,7 +125,13 @@ export function UserManagement() {
       setLoading(false)
     }
   };
-
+  if (loading) {
+    return (
+      <div className="p-6 flex justify-center items-center h-[300px]">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
 
   return (
