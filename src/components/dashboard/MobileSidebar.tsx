@@ -44,7 +44,7 @@ export function MobileSidebar() {
         ]
         : [
             { to: '/admin/dashboard', icon: Home, label: 'Overview' },
-            { to: '/admin/dashboard/transactions', icon: History, label: 'Transactions' },
+            // { to: '/admin/dashboard/transactions', icon: History, label: 'Transactions' },
             { to: '/admin/dashboard/userManagement', icon: Users, label: 'Users' },
             { to: '/admin/dashboard/newAdmin', icon: UserPlus, label: 'New Admin' },
 

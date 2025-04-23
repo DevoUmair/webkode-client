@@ -20,7 +20,7 @@ const plans = [
     },
     features: [
       { included: true, name: "Balance (20 requests/min)" },
-      { included: true, name: "Transaction History (limited)" },
+      { included: true, name: "Transaction History" },
       { included: true, name: "Basic Documentation" },
       { included: true, name: "Community Support" },
       { included: false, name: "Transfer" },

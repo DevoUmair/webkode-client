@@ -19,7 +19,7 @@ interface User {
   fullName: string;
   email: string;
   role: 'admin' | 'developer';
-  subscriptionStatus: 'active' | 'cancelled' | 'expired';
+  subscriptionStatus: 'active' | "canceled" | 'inactive';
   // isSubscribed:boolean,
   balance:number
 }
@@ -68,7 +68,9 @@ export function AdminDashboardHome() {
   // const verifiedUsers = users.filter(u => u.status === 'verified').length;
   // const pendingUsers = users.filter(u => u.status === 'pending').length;
   const subscribedUsers = users.filter(u => u.subscriptionStatus === 'active').length;
-  const cancelledUsers = users.filter(u => u.subscriptionStatus === 'cancelled').length;
+  const cancelledUsers = users.filter(u => u.subscriptionStatus === "canceled").length;
+  const inactive = users.filter(u => u.subscriptionStatus === "inactive").length;
+
 
 
 
@@ -130,6 +132,20 @@ export function AdminDashboardHome() {
             <div className="text-red-500 text-sm">{error}</div>
           ) : (
             <div className="text-xl font-semibold mt-1">{cancelledUsers}</div>
+          )}
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">Inactive Users</span>
+            <Clock className="h-4 w-4 text-red-500" />
+          </div>
+          {loading ? (
+            <div className="animate-pulse h-6 bg-gray-200 rounded mt-1"></div>
+          ) : error ? (
+            <div className="text-red-500 text-sm">{error}</div>
+          ) : (
+            <div className="text-xl font-semibold mt-1">{inactive}</div>
           )}
         </div>
       

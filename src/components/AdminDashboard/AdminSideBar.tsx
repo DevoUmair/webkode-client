@@ -19,7 +19,7 @@ import { useEffect } from 'react';
 export function AdminSidebar() {
   const navItems = [
     { to: 'admin/dashboard', icon: <Home className="h-5 w-5" />, label: 'Overview' },
-    { to: 'admin/dashboard/transactions', icon: <History className="h-5 w-5" />, label: 'Transactions' },
+    // { to: 'admin/dashboard/transactions', icon: <History className="h-5 w-5" />, label: 'Transactions' },
     { to: 'admin/dashboard/userManagement', icon: <Users className="h-5 w-5" />, label: 'Users' },
     { to: 'admin/dashboard/newAdmin', icon: <UserPlus className="h-5 w-5" />, label: 'New Admin' },
 

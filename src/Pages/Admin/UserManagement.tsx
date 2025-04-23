@@ -26,7 +26,7 @@ interface User {
   fullName: string;
   email: string;
   role: 'admin' | 'developer';
-  subscriptionStatus: 'active' | 'cancelled' | 'expired';
+  subscriptionStatus: 'active' | "canceled" | 'inactive';
   // isSubscribed:boolean,
   balance:number
 }
@@ -43,7 +43,7 @@ export function UserManagement() {
   const cancelSubscription = (userId: string) => {
     setUsers(users?.map(user =>
       user._id === userId
-        ? { ...user, subscriptionStatus: 'cancelled' }
+        ? { ...user, subscriptionStatus: "canceled" }
         : user
     ));
   };
