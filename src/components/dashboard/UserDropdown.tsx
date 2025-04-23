@@ -1,6 +1,6 @@
 // src/components/dashboard/UserDropdown.tsx
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,34 +9,33 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, User, LayoutDashboard } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../Hooks/UseAuth';
-import { useUser } from '@/context/UserContextProvider';
-import finteckApi from '@/axios/Axios';
-import { useState } from 'react';
-import FullPageLoader from '../Shared/Loader';
+} from "@/components/ui/dropdown-menu";
+import { LogOut, Settings, User, LayoutDashboard } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useUser } from "@/context/UserContextProvider";
+import finteckApi from "@/axios/Axios";
+import { useState } from "react";
+import FullPageLoader from "../Shared/Loader";
 
 export function UserDropdown() {
-  const { user, logout } = useUser()
-  const [loading, setLoading] = useState(false)
+  const { user, logout } = useUser();
+  const [loading, setLoading] = useState(false);
   const handleLogout = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await logout()
+      const response = await logout();
       console.log(response);
     } catch (error: any) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-    localStorage.removeItem('token');
-    window.location.href = '/login';
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   };
 
   if (loading) {
-    return <FullPageLoader />
+    return <FullPageLoader />;
   }
 
   return (
@@ -44,7 +43,10 @@ export function UserDropdown() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src='https://www.w3schools.com/w3images/avatar2.png' alt="error" />
+            <AvatarImage
+              src="https://www.w3schools.com/w3images/avatar2.png"
+              alt="error"
+            />
             <AvatarFallback>User</AvatarFallback>
           </Avatar>
         </Button>
@@ -66,7 +68,7 @@ export function UserDropdown() {
               <span>Profile</span>
             </Link>
           </DropdownMenuItem> */}
-          {user?.role === 'admin' ? (
+          {user?.role === "admin" ? (
             <DropdownMenuItem asChild>
               <Link to="/admin/dashboard" className="w-full">
                 <Settings className="mr-2 h-4 w-4" />
