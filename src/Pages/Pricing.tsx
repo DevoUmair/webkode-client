@@ -19,7 +19,7 @@ const plans = [
       monthly: 20,
     },
     features: [
-      { included: true, name: "Balance (20 requests/min)" },
+      { included: true, name: "Balance (20 requests/5 mins)" },
       { included: true, name: "Transaction History" },
       { included: true, name: "Basic Documentation" },
       { included: true, name: "Community Support" },
@@ -39,7 +39,7 @@ const plans = [
       monthly: 49,
     },
     features: [
-      { included: true, name: "Balance (50 requests/min)" },
+      { included: true, name: "Balance (50 requests/5 mins)" },
       { included: true, name: "Full Transaction History " },
       { included: true, name: "Transfer" },
       { included: true, name: "Basic Invoice Generation" },
@@ -59,7 +59,7 @@ const plans = [
       monthly: 199,
     },
     features: [
-      { included: true, name: "Balance (100 requests/min)" },
+      { included: true, name: "Balance (100 requests/5 mins)" },
       { included: true, name: "Full Transaction History" },
       { included: true, name: "Transfer" },
       { included: true, name: "Advanced Invoice Generation" },
