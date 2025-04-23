@@ -599,8 +599,8 @@ const DashboardHome = () => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [depositAmount, setDepositAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const { accessToken, user } = useUser();
-  const [lastUpdated,setLastUpdated]=useState(null)
+  const { accessToken, user, logout } = useUser();
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   // Animation variants
   const container = {
@@ -618,7 +618,42 @@ const DashboardHome = () => {
     show: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
+  const [balanceLoading, setBalanceLoading] = useState(true);
+  const [subsLoading, setSubsLoading] = useState(true);
+
+  const checkBalance = async () => {
+    const userId = user?.id;
+    console.log("ACCESS", accessToken);
+
+    setBalanceLoading(true);
+    try {
+      const response = await finteckApi.post(
+        "/account/check-balance",
+        { userId },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setLastUpdated(response.data.lastUpdate);
+      setBalance(response.data.balance);
+      console.log("Your balance is:", response.data.balance);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch balance";
+      toast.error(errorMessage);
+      if (error.response?.status === 429) {
+        logout();
+      }
+      console.error(error);
+    } finally {
+      setBalanceLoading(false);
+    }
+  };
+
   const getSubs = async () => {
+    setSubsLoading(true);
     try {
       const response = await finteckApi.get("/stripe/subscription", {
         headers: {
@@ -627,19 +662,22 @@ const DashboardHome = () => {
       });
       console.log(response.data);
       setEndDate(response.data.nextBillingDate);
-      // return response.data;
     } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to get subscription";
       console.error("Error fetching subscription:", error);
-      throw new Error(
-        error?.response?.data?.message || "Failed to get subscription."
-      );
+      toast.error(errorMessage);
+    } finally {
+      setSubsLoading(false);
     }
   };
 
   useEffect(() => {
     if (accessToken) {
-      checkBalance();
-      getSubs();
+      // Execute both requests in parallel
+      Promise.all([checkBalance(), getSubs()]).catch((error) => {
+        console.error("Error in API calls:", error);
+      });
     }
   }, [accessToken]);
   const [endDate, setEndDate] = useState(null);
@@ -675,32 +713,6 @@ const DashboardHome = () => {
       toast.error(e.message);
     } finally {
       setIsProcessing(false);
-    }
-  };
-
-  const checkBalance = async () => {
-    const userId = user?.id;
-    console.log("ACCESS", accessToken);
-
-    try {
-      const response = await finteckApi.post(
-        "/account/check-balance",
-        { userId },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      setLastUpdated(response.data.lastUpdate)
-      setBalance(response.data.balance);
-      console.log("Your balance is:", response.data.balance);
-    } catch (error: any) {
-      const e = error.response.data;
-      console.log(e.message);
-
-      toast.error(e.message);
-      console.error(error);
     }
   };
 
@@ -787,15 +799,34 @@ const DashboardHome = () => {
               <Wallet className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${balance}</div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-                <span className="flex items-center text-emerald-500">
-                  <ArrowUpRight className="h-4 w-4 mr-1" />
-                  Last Updated:
-                </span>
-                {/* const formattedDateTime = new Date(dateString).toLocaleString(); */}
-                <span> {lastUpdated ? new Date(lastUpdated).toLocaleString() : "N/A"}</span>
-              </div>
+              {balanceLoading ? (
+                <>
+                  <div className="h-8 w-24 bg-gray-200 rounded-md animate-pulse mb-2"></div>
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
+                    <div className="flex items-center">
+                      <div className="h-4 w-4 bg-gray-200 rounded-full animate-pulse mr-1"></div>
+                      <div className="h-4 w-24 bg-gray-200 rounded-md animate-pulse"></div>
+                    </div>
+                    <div className="h-4 w-32 bg-gray-200 rounded-md animate-pulse"></div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">${balance}</div>
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
+                    <span className="flex items-center text-emerald-500">
+                      <ArrowUpRight className="h-4 w-4 mr-1" />
+                      Last Updated:
+                    </span>
+                    <span>
+                      {" "}
+                      {lastUpdated
+                        ? new Date(lastUpdated).toLocaleString()
+                        : "N/A"}
+                    </span>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
           <Button
@@ -815,32 +846,62 @@ const DashboardHome = () => {
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{user?.fullName}</div>
-              <div className="flex flex-col space-y-3 mt-2">
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Mail className="h-4 w-4 mr-1" />
-                  <span>{user?.email}</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <BadgeCheck className="h-4 w-4 mr-1" />
-                  <span>Status: </span>
-                  <span
-                    className={
-                      user?.isSubscribed ? "text-emerald-500" : "text-amber-500"
-                    }
-                  >
-                    {user?.isSubscribed ? "Active" : "Not active"}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  Expires: {endDate ? new Date(endDate).toDateString() : "N/A"}
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <CreditCard className="h-4 w-4 mr-1" />
-                  <span>Account: {user?.id}</span>
-                </div>
-              </div>
+              {subsLoading ? (
+                <>
+                  <div className="h-8 w-32 bg-gray-200 rounded-md animate-pulse mb-4"></div>
+                  <div className="flex flex-col space-y-3 mt-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="h-4 w-4 bg-gray-200 rounded-full animate-pulse mr-1"></div>
+                      <div className="h-4 w-48 bg-gray-200 rounded-md animate-pulse"></div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-4 w-4 bg-gray-200 rounded-full animate-pulse mr-1"></div>
+                      <div className="h-4 w-16 bg-gray-200 rounded-md animate-pulse"></div>
+                      <div className="h-4 w-20 bg-gray-200 rounded-md animate-pulse"></div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-4 w-4 bg-gray-200 rounded-full animate-pulse mr-1"></div>
+                      <div className="h-4 w-56 bg-gray-200 rounded-md animate-pulse"></div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-4 w-4 bg-gray-200 rounded-full animate-pulse mr-1"></div>
+                      <div className="h-4 w-40 bg-gray-200 rounded-md animate-pulse"></div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{user?.fullName}</div>
+                  <div className="flex flex-col space-y-3 mt-2">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <Mail className="h-4 w-4 mr-1" />
+                      <span>{user?.email}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <BadgeCheck className="h-4 w-4 mr-1" />
+                      <span>Status: </span>
+                      <span
+                        className={
+                          user?.isSubscribed
+                            ? "text-emerald-500"
+                            : "text-amber-500"
+                        }
+                      >
+                        {user?.isSubscribed ? "Active" : "Not active"}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      Expires:{" "}
+                      {endDate ? new Date(endDate).toDateString() : "N/A"}
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <CreditCard className="h-4 w-4 mr-1" />
+                      <span>Account: {user?.id}</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </motion.div>
