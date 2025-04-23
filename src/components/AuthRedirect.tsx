@@ -3,7 +3,11 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContextProvider";
 import FullPageLoader from "./Shared/Loader";
 
-export default function AuthRedirect({ children }: { children: React.ReactNode }) {
+export default function AuthRedirect({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, isLoading } = useUser();
   const navigate = useNavigate();
 
@@ -12,8 +16,10 @@ export default function AuthRedirect({ children }: { children: React.ReactNode }
       if (user?.isAuthenticated) {
         if (user.role === "admin") {
           navigate("/admin/dashboard", { replace: true });
-        } else if (user.role === "developer") {
+        } else if (user.role === "developer" && user.isSubscribed) {
           navigate("/dashboard", { replace: true });
+        } else if (user.role === "developer" && !user.isSubscribed) {
+          navigate("/pricing", { replace: true });
         }
       }
     }

@@ -50,38 +50,46 @@ export default function LoginPage() {
       const data = response.data;
       console.log(data);
 
-
       if (data.user.role === "admin") {
+        const userObj = {
+          isAuthenticated: true,
+          ...data.user,
+          isSubscribed: true,
+        };
+        setUser(userObj);
+        setAccessToken(data.accessToken);
+        // navigate("/admin/dashboard");
+        toast.success("Login successfull");
+      } else if (data.user.role === "developer") {
+        if (data.user.isSubscribed) {
           const userObj = {
             isAuthenticated: true,
             ...data.user,
-            isSubscribed: true,
           };
+          console.log(userObj);
+
           setUser(userObj);
           setAccessToken(data.accessToken);
-          navigate("/admin/dashboard");
+          // navigate("/dashboard");
           toast.success("Login successfull");
+        } else {
+          console.log("NOT SUBS");
+
+          const userObj = {
+            isAuthenticated: true,
+            ...data.user,
+          };
+          console.log(userObj);
+
+          setUser(userObj);
+          setAccessToken(data.accessToken);
+          // navigate("/pricing");
         }
-       else if(data.user.role==='developer'){
-            if(data.user.isSubscribed){
-              const userObj = {
-                isAuthenticated: true,
-                ...data.user,
-              };
-              console.log(userObj);
-    
-              setUser(userObj);
-              setAccessToken(data.accessToken);
-              navigate("/dashboard");
-              toast.success("Login successfull");
-            }else{
-               navigate("/pricing");
-            }
-       }
+      }
 
       // if (data.user.isSubscribed) {
       //   navigate('/dashboard');
-        
+
       //   } else if (data.user.role === "developer") {
       //     const userObj = {
       //       isAuthenticated: true,

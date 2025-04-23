@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useUser } from "@/context/UserContextProvider";
-import { useEffect, useState  , useRef } from "react";
-import LoadingBar from 'react-top-loading-bar';
+import { useEffect, useState, useRef } from "react";
+import LoadingBar from "react-top-loading-bar";
 import FullPageLoader from "./Shared/Loader";
 
 interface ProtectedRouteProps {
@@ -13,7 +13,6 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const ref = useRef(null);
 
-
   useEffect(() => {
     if (!isLoading && user) {
       console.log(user?.role);
@@ -22,15 +21,12 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
         ref.current?.complete();
       } else {
         ref.current?.start();
-        
       }
     }
   }, [user, isLoading]);
 
   if (isLoading) {
-    return (
-      <FullPageLoader/>
-    );
+    return <FullPageLoader />;
   }
 
   if (!user?.isAuthenticated) {

@@ -17,10 +17,9 @@ const plans = [
     description: "For developers just getting started with financial APIs",
     price: {
       monthly: 20,
-      yearly: 17,
     },
     features: [
-      { included: true, name: "Balance (10 requests/min)" },
+      { included: true, name: "Balance (20 requests/min)" },
       { included: true, name: "Transaction History (limited)" },
       { included: true, name: "Basic Documentation" },
       { included: true, name: "Community Support" },
@@ -38,10 +37,9 @@ const plans = [
     description: "For growing businesses integrating financial services",
     price: {
       monthly: 49,
-      yearly: 39,
     },
     features: [
-      { included: true, name: "Balance (20 requests/min)" },
+      { included: true, name: "Balance (50 requests/min)" },
       { included: true, name: "Full Transaction History " },
       { included: true, name: "Transfer" },
       { included: true, name: "Basic Invoice Generation" },
@@ -59,7 +57,6 @@ const plans = [
     description: "For organizations requiring high-volume API access",
     price: {
       monthly: 199,
-      yearly: 159,
     },
     features: [
       { included: true, name: "Balance (100 requests/min)" },
@@ -78,9 +75,7 @@ const plans = [
 
 export default function PricingPage() {
   const navigate = useNavigate();
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
-    "monthly"
-  );
+
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { accessToken, user } = useUser();
@@ -108,12 +103,12 @@ export default function PricingPage() {
           },
         }
       );
-      console.log(response)
+      console.log(response);
       if (response.data.url) {
         window.location.href = response.data.url;
       }
 
-      console.log(response.data)
+      console.log(response.data);
     } catch (error) {
       console.error("Subscription error:", error);
     } finally {
@@ -138,41 +133,6 @@ export default function PricingPage() {
             Choose the plan that fits your development needs, with no hidden
             fees or surprises.
           </p>
-
-          <div className="flex items-center justify-center space-x-4">
-            <Label
-              htmlFor="billing-toggle"
-              className={
-                billingCycle === "monthly"
-                  ? "font-medium"
-                  : "text-muted-foreground"
-              }
-            >
-              Monthly
-            </Label>
-            <Switch
-              id="billing-toggle"
-              checked={billingCycle === "yearly"}
-              onCheckedChange={(checked: any) =>
-                setBillingCycle(checked ? "yearly" : "monthly")
-              }
-            />
-            <div className="flex items-center gap-2">
-              <Label
-                htmlFor="billing-toggle"
-                className={
-                  billingCycle === "yearly"
-                    ? "font-medium"
-                    : "text-muted-foreground"
-                }
-              >
-                Yearly
-              </Label>
-              <span className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs font-medium px-2 py-0.5 rounded">
-                Save 20%
-              </span>
-            </div>
-          </div>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -209,16 +169,10 @@ export default function PricingPage() {
                 <div className="mb-6">
                   <div className="flex items-end">
                     <span className="text-4xl font-bold">
-                      ${plan.price[billingCycle]}
+                      ${plan.price.monthly}
                     </span>
                     <span className="text-muted-foreground ml-2 mb-1">
-                      {plan.price[billingCycle] > 0
-                        ? `/ ${
-                            billingCycle === "monthly"
-                              ? "month"
-                              : "month, billed yearly"
-                          }`
-                        : "forever"}
+                      monthly
                     </span>
                   </div>
                 </div>
