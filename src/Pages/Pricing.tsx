@@ -29,7 +29,7 @@ const plans = [
       { included: false, name: "Priority Support" },
     ],
     popular: false,
-    cta: "Get Started Now",
+    cta: "Subscribe Now",
   },
   {
     id: "price_1RGTh5JvljWkaejrRqfQ90TH",
@@ -69,7 +69,7 @@ const plans = [
       { included: true, name: "SLA Agreement" },
     ],
     popular: false,
-    cta: "Contact Sales",
+    cta: "Subscribe Now",
   },
 ];
 
